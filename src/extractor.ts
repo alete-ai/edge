@@ -43,7 +43,6 @@ export class Extractor {
       const { document: convertDoc } = parseHTML(finalHtml)
 
       // Provide the DOMParser from linkedom to the converter
-      // @ts-expect-error - types slightly differ
       const customParser = new convertDoc.defaultView.DOMParser()
 
       const markdown = convert(finalHtml, {
