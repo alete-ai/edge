@@ -2,7 +2,6 @@
 
 # Dependencies
 node_modules/
-pnpm-lock.yaml
 
 # Build
 dist/
@@ -37,6 +36,7 @@ training/synthetic.json
 # Testing
 coverage/
 *.log
+*.tgz
 
 # Dev
 worktree/

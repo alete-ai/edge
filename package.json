@@ -1,16 +1,38 @@
 {
-  "name": "edge-pulse",
+  "name": "@alete-ai/edge",
   "version": "0.1.0",
-  "description": "Neural Extraction & Semantic Bucketing Library",
-  "main": "./dist/index.js",
-  "scripts": {
-    "test": "vitest run"
+  "description": "Content Extraction & Semantic Classification Library",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
   },
-  "keywords": [],
-  "author": "Stoyan Dimitrov <https://github.com/stoyand>",
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsup",
+    "postbuild": "du -sh dist/*.js dist/*.cjs",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "edge",
+    "nlp",
+    "extraction",
+    "readability",
+    "markdown"
+  ],
+  "author": "Stoyan Dimitrov <https://github.com/StoyanD>",
   "license": "AGPL-3.0",
   "type": "module",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "src/model/weights.json"
@@ -29,7 +51,9 @@
     "@vitest/ui": "^4.1.5",
     "jsdom": "^29.0.2",
     "ts-mockito": "^2.6.1",
+    "tsup": "^8.5.1",
     "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.5"
   }
 }

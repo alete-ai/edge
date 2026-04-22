@@ -1,11 +1,11 @@
-# Implementation Plan: EdgePulse
+# Implementation Plan: AleteEdge
 
-## Phase 1: Substrate Initialization (Library Setup) [x]
+## Phase 1: Project Initialization [x]
 - [x] Initialize project root structure.
-- [x] Initialize `package.json` with AGPL-3.0 license and `edge-pulse` name.
+- [x] Initialize `package.json` with AGPL-3.0 license and `@alete-ai/edge` name.
 - [x] Configure `tsconfig.json` for modern TS (ESM).
 - [x] Add `LICENSE` file (AGPL-3.0).
-- [x] Add comprehensive root `README.md` using the Soil/Botanist/Pulse metaphors.
+- [x] Add comprehensive root `README.md`.
 - [x] Add proper root `.gitignore`.
 
 ## Phase 2: The Training Pipeline (Python & HuggingFace) [x]
@@ -15,14 +15,14 @@
 - [x] Write `generate_synthetic.py` to create training samples for Functional and Restricted categories.
 - [x] Write `train_model.js` to process datasets, map to hierarchical labels, train the classifier, and export `weights.json`.
 
-## Phase 3: The EdgePulse Runtime (TS Implementation) [x]
+## Phase 3: The AleteEdge Runtime (TS Implementation) [x]
 - [x] Install runtime dependencies: `linkedom`, `dom-to-semantic-markdown`, `wink-nlp`, etc.
 - [x] Implement `src/extractor.ts` (HTML -> DOM -> Markdown).
 - [x] Implement `src/classifier.ts` (Markdown -> Hierarchical Label).
-- [x] Implement `src/index.ts` exporting the unified `EdgePulse` API.
+- [x] Implement `src/index.ts` exporting the unified `AleteEdge` API.
 
 ## Phase 4: Testing & Integration [x]
 - [x] Set up Vitest in the library.
 - [x] Write unit tests for extraction and classification.
 - [x] Implement integration tests using `ts-mockito`.
-- [ ] (Future Track) Replace inline implementation in `apps/extension` with the new `@vedai/edge-pulse` package.
+- [ ] (Future Track) Replace inline implementation in existing apps with the new `@alete-ai/edge` package.

@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { mock, when, instance, anyString } from 'ts-mockito';
-import { EdgePulse } from './index.js';
+import { AleteEdge } from './index.js';
 import { Extractor } from './extractor.js';
 import { ContentClassifier } from './classifier.js';
 
-describe('EdgePulse (Unified API)', () => {
+describe('AleteEdge (Unified API)', () => {
   it('should coordinate extraction and classification correctly', async () => {
     // 1. Setup mocks
     const mockedExtractor = mock(Extractor);
@@ -18,13 +18,13 @@ describe('EdgePulse (Unified API)', () => {
     when(mockedClassifier.classify(mockMarkdown)).thenReturn(mockLabel);
 
     // 2. Instantiate with mocked dependencies
-    const pulse = new EdgePulse({}, {
+    const edge = new AleteEdge({}, {
       extractor: instance(mockedExtractor),
       classifier: instance(mockedClassifier)
     });
 
     // 3. Execute
-    const result = await pulse.process(mockHtml);
+    const result = await edge.process(mockHtml);
 
     // 4. Verify
     expect(result.markdown).toBe(mockMarkdown);
@@ -62,12 +62,12 @@ describe('EdgePulse (Unified API)', () => {
     when(mockedExtractor.extract(anyString())).thenReturn(undefined);
     when(mockedClassifier.classify("")).thenReturn("Other:General");
 
-    const pulse = new EdgePulse({}, {
+    const edge = new AleteEdge({}, {
       extractor: instance(mockedExtractor),
       classifier: instance(mockedClassifier)
     });
 
-    const result = await pulse.process("invalid html");
+    const result = await edge.process("invalid html");
 
     expect(result.markdown).toBe("");
     expect(result.label).toBe("Other:General");

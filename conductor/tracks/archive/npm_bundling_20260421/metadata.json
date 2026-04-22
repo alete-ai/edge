@@ -1,0 +1,6 @@
+{
+  "id": "npm_bundling_20260421",
+  "name": "@alete-ai/edge: NPM Bundling",
+  "status": "Completed",
+  "description": "Bundling the core library and classification model weights into a production-ready npm package."
+}

@@ -2,11 +2,11 @@ import { Extractor, type ExtractorOptions } from './extractor.js'
 import { ContentClassifier } from './classifier.js'
 import { Redactor, type RedactorOptions } from './sanitization/Redactor.js'
 
-export interface EdgePulseOptions extends ExtractorOptions {
+export interface AleteEdgeOptions extends ExtractorOptions {
   redactor?: RedactorOptions | boolean
 }
 
-export interface EdgePulseResult {
+export interface AleteEdgeResult {
   markdown: string
   label: string
   metadata?: {
@@ -15,12 +15,12 @@ export interface EdgePulseResult {
   }
 }
 
-export class EdgePulse {
+export class AleteEdge {
   private extractor: Extractor
   private classifier: ContentClassifier
   private redactor?: Redactor
 
-  constructor(options: EdgePulseOptions = {}, overrides?: { extractor?: Extractor, classifier?: ContentClassifier, redactor?: Redactor }) {
+  constructor(options: AleteEdgeOptions = {}, overrides?: { extractor?: Extractor, classifier?: ContentClassifier, redactor?: Redactor }) {
     this.extractor = overrides?.extractor || new Extractor(options)
     this.classifier = overrides?.classifier || new ContentClassifier()
 
@@ -35,7 +35,7 @@ export class EdgePulse {
   /**
    * Processes a raw HTML string and returns semantic Markdown and a genre label.
    */
-  public async process(html: string): Promise<EdgePulseResult> {
+  public async process(html: string): Promise<AleteEdgeResult> {
     let markdown = this.extractor.extract(html) || ''
     const label = this.classifier.classify(markdown)
 
@@ -71,4 +71,3 @@ export class EdgePulse {
     return this.classifier.classify(text)
   }
 }
-

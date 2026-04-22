@@ -1,6 +1,6 @@
-# Conductor Index: EdgePulse
+# Conductor Index: AleteEdge
 
-Welcome to the EdgePulse development hub.
+Welcome to the AleteEdge development hub.
 
 ## Project Artifacts
 - [Product Definition](./product.md)
