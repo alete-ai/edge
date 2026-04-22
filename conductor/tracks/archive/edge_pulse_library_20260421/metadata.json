@@ -1,0 +1,6 @@
+{
+  "id": "edge_pulse_library_20260421",
+  "name": "AleteEdge: Content Extraction & Classification Library",
+  "status": "completed",
+  "description": "Standalone AGPL-3.0 library for HTML -> Markdown extraction and hierarchical semantic classification. Features a multi-dataset training pipeline and on-device categorization."
+}

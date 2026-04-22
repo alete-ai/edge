@@ -1,13 +1,12 @@
-# Specification: EdgePulse Privacy-First Data Sanitization Layer
+# Specification: AleteEdge Data Sanitization Layer
 
 ## 1. Overview
-The **Privacy-First Data Sanitization Layer** is a specialized module for the `edge-pulse` library. Its primary function is to intercept the markdown generated after HTML classification and "scrub" it for sensitive information before it is passed to LLMs or stored in the data substrate. This ensures compliance, trust, and "Cognitive Sovereignty."
+The **Data Sanitization Layer** is a specialized module for the `AleteEdge` library. Its primary function is to intercept the markdown generated after HTML classification and "scrub" it for sensitive information before it is passed to LLMs or stored. This ensures compliance and trust.
 
 ## 2. Objectives
-- **Structural Resilience:** Implement a zero-dependency, high-performance regex engine for data redaction.
-- **Metabolic Efficiency:** Ensure <10ms overhead per 1KB of markdown processing on the edge (Vercel Edge / Cloudflare Workers).
-- **Signal Clarity:** Redact sensitive data with informative placeholders (e.g., `[EMAIL_REDACTED]`) to maintain LLM context while ensuring security.
-- **Neural Alignment:** Prioritize "Privacy-by-Design" as a core product value.
+- **Performance:** Ensure <10ms overhead per 1KB of markdown processing on edge runtimes (Vercel Edge / Cloudflare Workers).
+- **Security:** Redact sensitive data with informative placeholders (e.g., `[EMAIL_REDACTED]`) to maintain context while ensuring security.
+- **Privacy-by-Design:** Prioritize data protection as a core product value.
 
 ## 3. Targeted Sensitive Data Categories
 
@@ -36,9 +35,9 @@ The **Privacy-First Data Sanitization Layer** is a specialized module for the `e
 ## 4. Technical Framework
 - **Primary Library:** `@hackylabs/deep-redact` (Zero-dependency, edge-compatible).
 - **Environment:** Must run in any JS environment (Node.js, Edge Runtime, Browser).
-- **Interface:** A simple `redact(text: string): string` function added to the `edge-pulse` pipeline.
+- **Interface:** A simple `redact(text: string): string` function added to the `AleteEdge` pipeline.
 
-## 5. Survival Metrics
+## 5. Success Metrics
 - **Performance:** Processing speed < 10ms per 1KB.
 - **Accuracy:** >98% detection of standard sensitive patterns (Emails, CCs, API Keys).
-- **Substrate Health:** No sensitive data leaks into logs or LLM prompts during automated testing.
+- **Security:** No sensitive data leaks into logs or prompts during automated testing.
