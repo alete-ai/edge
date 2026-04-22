@@ -18,11 +18,58 @@ nbc.definePrepTasks([
 ]);
 
 // Define pre-processing tasks using wink-nlp
-const preprocess = (text) => {
+const preprocess = (text, metadata) => {
   const doc = nlp.readDoc(text);
-  const tokens = doc.tokens()
+  const unigrams = doc.tokens()
     .filter((t) => !t.out(its.stopWordFlag) && (t.out(its.type) === 'word' || t.out() === '[' || t.out() === ']'))
     .out(its.stem);
+  
+  // Create bigrams
+  const bigrams = [];
+  for (let i = 0; i < unigrams.length - 1; i++) {
+    bigrams.push(`${unigrams[i]}_${unigrams[i+1]}`);
+  }
+
+  // Create character bigrams for very short texts or specific tokens
+  const charBigrams = [];
+  unigrams.forEach(u => {
+    if (u.length < 5) {
+      for (let i = 0; i < u.length - 1; i++) {
+        charBigrams.push(`c:${u[i]}${u[i+1]}`);
+      }
+    }
+  });
+
+  const tokens = [...unigrams, ...bigrams, ...charBigrams];
+  
+  // Add metadata tokens if available (Repeated 5x for weighting)
+  if (metadata) {
+    const metaTokens = [];
+    if (metadata.buttonCount > 10) metaTokens.push('__btn_high');
+    else if (metadata.buttonCount > 2) metaTokens.push('__btn_mid');
+    else if (metadata.buttonCount > 0) metaTokens.push('__btn_low');
+
+    if (metadata.linkCount > 50) metaTokens.push('__lnk_high');
+    else if (metadata.linkCount > 10) metaTokens.push('__lnk_mid');
+    else if (metadata.linkCount > 0) metaTokens.push('__lnk_low');
+
+    if (metadata.linkToWordRatio > 0.3) metaTokens.push('__ratio_high');
+    else if (metadata.linkToWordRatio > 0.1) metaTokens.push('__ratio_mid');
+    
+    if (metadata.imageCount > 10) metaTokens.push('__img_high');
+    else if (metadata.imageCount > 0) metaTokens.push('__img_low');
+
+    if (metadata.paragraphCount > 20) metaTokens.push('__para_high');
+    else if (metadata.paragraphCount > 5) metaTokens.push('__para_mid');
+
+    if (metadata.listCount > 5) metaTokens.push('__list_high');
+    else if (metadata.listCount > 0) metaTokens.push('__list_low');
+
+    for (let i = 0; i < 5; i++) {
+      tokens.push(...metaTokens);
+    }
+  }
+
   return tokens;
 };
 
@@ -33,7 +80,7 @@ nbc.defineConfig({
 
 const datasetPath = path.join(__dirname, 'dataset.json');
 const syntheticPath = path.join(__dirname, 'synthetic.json');
-const realWebPath = path.join(__dirname, 'real_web_data.json');
+const realWebPath = path.join(__dirname, 'augmented_web_data.json');
 const weightsPath = path.join(__dirname, '../src/model/weights.json');
 const reportsDir = path.join(__dirname, 'reports');
 
@@ -75,12 +122,32 @@ const valData = allData.slice(splitIndex);
 
 console.log(`Training on ${trainData.length} samples, validating on ${valData.length}...`);
 
+// Pass 1: Frequency Analysis for Pruning
+console.log('Pass 1: Analyzing token frequencies for pruning...');
+const tokenFreq = new Map();
+trainData.forEach((item) => {
+  const tokens = preprocess(item.text, item.metadata);
+  const uniqueTokens = new Set(tokens);
+  uniqueTokens.forEach(t => {
+    tokenFreq.set(t, (tokenFreq.get(t) || 0) + 1);
+  });
+});
+
+const MAX_TOKENS = 20000;
+const prunedTokens = new Set(
+  Array.from(tokenFreq.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, MAX_TOKENS)
+    .map(entry => entry[0])
+);
+console.log(`Keeping top ${prunedTokens.size} tokens. Total tokens was ${tokenFreq.size}.`);
+
 let totalTokens = 0;
 const labelStats = {};
 
 trainData.forEach((item, index) => {
   if (index % 1000 === 0) console.log(`Processed ${index} training samples...`);
-  const tokens = preprocess(item.text);
+  const tokens = preprocess(item.text, item.metadata).filter(t => prunedTokens.has(t));
   if (tokens.length > 0) {
     totalTokens += tokens.length;
     labelStats[item.label] = (labelStats[item.label] || 0) + 1;
@@ -97,7 +164,7 @@ let correct = 0;
 const perLabelMetrics = {};
 
 valData.forEach(item => {
-  const tokens = preprocess(item.text);
+  const tokens = preprocess(item.text, item.metadata);
   if (tokens.length > 0) {
     const prediction = nbc.predict(tokens.join(' '));
     if (!perLabelMetrics[item.label]) perLabelMetrics[item.label] = { total: 0, correct: 0 };
@@ -153,6 +220,10 @@ console.log(`Audit report saved to ${reportPath}`);
 
 // Export weights
 console.log('Exporting weights...');
-const weights = nbc.exportJSON();
-fs.writeFileSync(weightsPath, weights);
-console.log(`Model weights saved to ${weightsPath}`);
+let weights = JSON.parse(nbc.exportJSON());
+
+// Optimization: Round large floats in weights if they exist to save JSON space
+// Naive Bayes weights are typically token counts and log-probabilities.
+// We'll keep them as is for now but minify the JSON.
+fs.writeFileSync(weightsPath, JSON.stringify(weights));
+console.log(`Model minified weights saved to ${weightsPath}`);

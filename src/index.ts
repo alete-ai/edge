@@ -1,4 +1,4 @@
-import { Extractor, ExtractMode, type ExtractorOptions } from './extractor.js'
+import { Extractor, ExtractMode, type ExtractorOptions, type SignalMetadata } from './extractor.js'
 import { ContentClassifier } from './classifier.js'
 import { Redactor, type RedactorOptions } from './sanitization/Redactor.js'
 
@@ -9,8 +9,7 @@ export interface AleteEdgeOptions extends ExtractorOptions {
 export interface AleteEdgeResult {
   markdown: string
   label: string
-  metadata?: {
-    wordCount: number
+  metadata?: SignalMetadata & {
     charCount: number
   }
 }
@@ -40,8 +39,19 @@ export class AleteEdge {
    */
   public async process(html: string): Promise<AleteEdgeResult> {
     // Pass 1: Signal Extraction for Classification
-    const signalMarkdown = this.extractor.extract(html, ExtractMode.SIGNAL) || ''
-    const label = this.classifier.classify(signalMarkdown)
+    const extractionResult = this.extractor.extractWithMetadata(html, ExtractMode.SIGNAL)
+    const signalMarkdown = extractionResult?.markdown || ''
+    const signalMetadata = extractionResult?.metadata || {
+      buttonCount: 0,
+      linkCount: 0,
+      imageCount: 0,
+      wordCount: 0,
+      linkToWordRatio: 0,
+      paragraphCount: 0,
+      listCount: 0
+    }
+
+    const label = this.classifier.classify(signalMarkdown, signalMetadata)
 
     // Pass 2: Semantic Extraction for high-fidelity output
     let markdown = this.extractor.extract(html, ExtractMode.SEMANTIC) || ''
@@ -54,7 +64,7 @@ export class AleteEdge {
       markdown,
       label,
       metadata: {
-        wordCount: markdown.split(/\s+/).filter(Boolean).length,
+        ...signalMetadata,
         charCount: markdown.length,
       },
     }

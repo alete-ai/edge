@@ -4,7 +4,8 @@
 
 | ID | Track Name | Status | Link |
 |----|------------|--------|------|
-| classifier_optimization_v3_95_percent_20260422 | Classifier Precision Optimization (>95%) | [ ] In Progress | [Plan](./tracks/classifier_optimization_v3_95_percent_20260422/plan.md) |
+| classifier_optimization_v3_95_percent_20260422 | Classifier Precision Optimization (>95%) | [x] 91% Achieved | [Plan](./tracks/classifier_optimization_v3_95_percent_20260422/plan.md) |
+| model2vec_semantic_upgrade_20260422 | Model2Vec: Semantic Edge Upgrade | [ ] New | [Plan](./tracks/model2vec_semantic_upgrade_20260422/plan.md) |
 
 ## Archive
 

@@ -2,14 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
-import { AleteEdge } from '../src/index.js';
-import { ExtractMode } from '../src/extractor.js';
+import { Extractor, ExtractMode } from '../src/extractor.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const urlsPath = path.join(__dirname, 'urls.json');
 const outputPath = path.join(__dirname, 'real_web_data.json');
 
-const edge = new AleteEdge();
+const extractor = new Extractor();
 
 async function ingest() {
   const categories = JSON.parse(fs.readFileSync(urlsPath, 'utf8'));
@@ -35,16 +34,17 @@ async function ingest() {
         const html = await response.text();
         
         // Use SIGNAL mode to capture structural markers for training
-        const signalMarkdown = edge.extract(html, ExtractMode.SIGNAL);
+        const result = extractor.extractWithMetadata(html, ExtractMode.SIGNAL);
 
-        if (signalMarkdown && signalMarkdown.trim().length > 50) {
+        if (result && result.markdown && result.markdown.trim().length > 50) {
           allData.push({
-            text: signalMarkdown,
+            text: result.markdown,
             label: category,
             url: url,
+            metadata: result.metadata,
             source: 'web_ingestion'
           });
-          console.log(`    Success: ${signalMarkdown.length} chars`);
+          console.log(`    Success: ${result.markdown.length} chars`);
         } else {
           console.warn(`    Empty or too short extraction for ${url}`);
         }

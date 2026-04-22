@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-04-22T18:46:16.854Z",
+  "dataSources": {
+    "web_ingestion": 166,
+    "x-genre": 2001,
+    "synthetic": 2991
+  },
+  "totalSamples": 5158,
+  "trainSamples": 4642,
+  "valSamples": 516,
+  "totalTokens": 1835043,
+  "overallAccuracy": "80.43%",
+  "labelDistribution": {
+    "Creative:Prose": 112,
+    "Social:Forum": 334,
+    "Functional:App": 560,
+    "Restricted:Financial": 656,
+    "Informational:News": 333,
+    "Educational:Instruction": 202,
+    "Informational:Blog": 469,
+    "Commercial:Promotion": 482,
+    "Informational:Research": 641,
+    "Other:General": 521,
+    "Restricted:Legal": 197,
+    "Restricted:PII": 127,
+    "Restricted:Health": 8
+  },
+  "perLabelAccuracy": {
+    "Functional:App": {
+      "total": 56,
+      "correct": 53,
+      "accuracy": "94.64%"
+    },
+    "Commercial:Promotion": {
+      "total": 59,
+      "correct": 44,
+      "accuracy": "74.58%"
+    },
+    "Restricted:Financial": {
+      "total": 61,
+      "correct": 61,
+      "accuracy": "100.00%"
+    },
+    "Other:General": {
+      "total": 59,
+      "correct": 45,
+      "accuracy": "76.27%"
+    },
+    "Informational:Research": {
+      "total": 76,
+      "correct": 61,
+      "accuracy": "80.26%"
+    },
+    "Creative:Prose": {
+      "total": 11,
+      "correct": 8,
+      "accuracy": "72.73%"
+    },
+    "Social:Forum": {
+      "total": 54,
+      "correct": 39,
+      "accuracy": "72.22%"
+    },
+    "Informational:News": {
+      "total": 32,
+      "correct": 27,
+      "accuracy": "84.38%"
+    },
+    "Informational:Blog": {
+      "total": 31,
+      "correct": 15,
+      "accuracy": "48.39%"
+    },
+    "Educational:Instruction": {
+      "total": 19,
+      "correct": 9,
+      "accuracy": "47.37%"
+    },
+    "Restricted:PII": {
+      "total": 26,
+      "correct": 25,
+      "accuracy": "96.15%"
+    },
+    "Restricted:Legal": {
+      "total": 31,
+      "correct": 28,
+      "accuracy": "90.32%"
+    },
+    "Restricted:Health": {
+      "total": 1,
+      "correct": 0,
+      "accuracy": "0.00%"
+    }
+  },
+  "config": {
+    "smoothingFactor": 0.5,
+    "considerOnlyPresence": true,
+    "preprocessing": "wink-nlp stem + preserve brackets []"
+  }
+}

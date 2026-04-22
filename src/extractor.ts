@@ -16,6 +16,16 @@ export interface ExtractorOptions {
   ignoredTags?: string[]
 }
 
+export interface SignalMetadata {
+  buttonCount: number
+  linkCount: number
+  imageCount: number
+  wordCount: number
+  linkToWordRatio: number
+  paragraphCount: number
+  listCount: number
+}
+
 export class Extractor {
   private defaultIgnoredTags: Set<string>
 
@@ -24,6 +34,22 @@ export class Extractor {
     this.defaultIgnoredTags = new Set(options.ignoredTags || [
       'script', 'style', 'iframe', 'noscript', 'svg'
     ])
+  }
+
+  /**
+   * Extracts content and structural metadata from HTML.
+   */
+  public extractWithMetadata(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): { markdown: string, metadata: SignalMetadata } | undefined {
+    try {
+      const { document } = parseHTML(html)
+      const metadata = this.calculateSignalMetadata(document)
+      const markdown = this.extract(html, mode) || ''
+      
+      return { markdown, metadata }
+    } catch (error) {
+      console.error('[AleteEdge] Failed to extract with metadata:', error)
+      return undefined
+    }
   }
 
   /**
@@ -99,6 +125,39 @@ export class Extractor {
     } catch (error) {
       console.error('[AleteEdge] Failed to convert HTML to Markdown:', error)
       return undefined
+    }
+  }
+
+  private calculateSignalMetadata(document: any): SignalMetadata {
+    if (!document || !document.querySelectorAll) {
+      return {
+        buttonCount: 0,
+        linkCount: 0,
+        imageCount: 0,
+        wordCount: 0,
+        linkToWordRatio: 0,
+        paragraphCount: 0,
+        listCount: 0
+      }
+    }
+    const buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]')
+    const links = document.querySelectorAll('a')
+    const images = document.querySelectorAll('img')
+    const paragraphs = document.querySelectorAll('p')
+    const lists = document.querySelectorAll('ul, ol')
+    
+    // Crude word count from text content
+    const bodyContent = document.body ? document.body.textContent : (document.documentElement ? document.documentElement.textContent : '')
+    const wordCount = (bodyContent || '').split(/\s+/).filter(Boolean).length
+
+    return {
+      buttonCount: buttons.length,
+      linkCount: links.length,
+      imageCount: images.length,
+      wordCount,
+      linkToWordRatio: wordCount > 0 ? links.length / wordCount : 0,
+      paragraphCount: paragraphs.length,
+      listCount: lists.length
     }
   }
 }
