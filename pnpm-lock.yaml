@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@hackylabs/deep-redact':
+        specifier: ^3.0.5
+        version: 3.0.5
       '@mozilla/readability':
         specifier: ^0.6.0
         version: 0.6.0
@@ -282,6 +285,9 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
+
+  '@hackylabs/deep-redact@3.0.5':
+    resolution: {integrity: sha512-CI6TJytOngHiD9RCjBBwsBrg5kCkyK74RBxawLCQ8b6yOzDgIPN4/zRI/YvL6IV18Xcb6HI93Fo2bzJ19efNqQ==}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -1406,6 +1412,8 @@ snapshots:
     optional: true
 
   '@exodus/bytes@1.15.0': {}
+
+  '@hackylabs/deep-redact@3.0.5': {}
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
