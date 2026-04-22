@@ -36,13 +36,17 @@ export class Extractor {
 
       // We re-parse because Readability might have modified the document 
       // or we want a fresh start for the converter.
-      const { document: convertDoc } = parseHTML(htmlToConvert);
+      let finalHtml = htmlToConvert;
+      if (!finalHtml.toLowerCase().includes('<html')) {
+        finalHtml = `<html><body>${finalHtml}</body></html>`;
+      }
+      const { document: convertDoc } = parseHTML(finalHtml);
 
       // Provide the DOMParser from linkedom to the converter
       // @ts-expect-error - types slightly differ
       const customParser = new convertDoc.defaultView.DOMParser();
 
-      const markdown = convert(htmlToConvert, {
+      const markdown = convert(finalHtml, {
         extractMainContent: false, // We use Readability or manual cleanup
         overrideDOMParser: customParser,
         overrideElementProcessing: (element: Element): SemanticMarkdownAST[] | undefined => {

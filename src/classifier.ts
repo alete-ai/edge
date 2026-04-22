@@ -33,7 +33,7 @@ export class ContentClassifier {
    */
   public classify(text: string): string {
     const tokens = this.preprocess(text);
-    if (tokens.length === 0) return 'Other';
+    if (tokens.length === 0) return 'Other:General';
     return this.nbc.predict(tokens);
   }
 

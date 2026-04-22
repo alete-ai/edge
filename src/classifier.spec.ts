@@ -26,7 +26,7 @@ describe('ContentClassifier (Pulse)', () => {
   });
 
   it('should default to Other:General for unknown signals', () => {
-    const text = "asdf qwerty 123456";
+    const text = "...";
     expect(classifier.classify(text)).toBe('Other:General');
   });
 });
