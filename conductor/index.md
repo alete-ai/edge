@@ -1,6 +1,6 @@
-# Conductor Index: EdgePulse
+# Conductor Index: AleteEdge
 
-Welcome to the EdgePulse development hub.
+Welcome to the AleteEdge development hub.
 
 ## Project Artifacts
 - [Product Definition](./product.md)
@@ -9,4 +9,4 @@ Welcome to the EdgePulse development hub.
 - [Tracks Registry](./tracks.md)
 
 ## Active Tracks
-- [EdgePulse Library Extraction](./tracks/edge_pulse_library_20260421/index.md)
+- [AleteEdge: Data Sanitization](./tracks/data_sanitization_edge_20260421/index.md)

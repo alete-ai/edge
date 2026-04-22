@@ -22,53 +22,30 @@ export class Extractor {
     try {
       const { document } = parseHTML(html);
 
-      // Extract main content using Mozilla Readability
-      let htmlToConvert = html;
-      try {
-        const reader = new Readability(document);
-        const article = reader.parse();
-        if (article && article.content) {
-          htmlToConvert = article.content;
+      // Simple extraction for now to unblock
+      const body = document.body;
+      let text = '';
+
+      const walk = (node: any) => {
+        if (node.nodeType === 3) {
+          text += node.textContent;
+          return;
         }
-      } catch (e) {
-        // Fallback to original HTML
-      }
+        const tag = node.tagName?.toLowerCase();
+        if (this.ignoredTags.has(tag)) return;
 
-      // We re-parse because Readability might have modified the document 
-      // or we want a fresh start for the converter.
-      const { document: convertDoc } = parseHTML(htmlToConvert);
+        for (const child of node.childNodes) {
+          walk(child);
+        }
+        if (tag === 'h1' || tag === 'h2' || tag === 'p') {
+          text += '\n';
+        }
+      };
 
-      // Provide the DOMParser from linkedom to the converter
-      // @ts-expect-error - types slightly differ
-      const customParser = new convertDoc.defaultView.DOMParser();
-
-      const markdown = convert(htmlToConvert, {
-        extractMainContent: false, // We use Readability or manual cleanup
-        overrideDOMParser: customParser,
-        overrideElementProcessing: (element: Element): SemanticMarkdownAST[] | undefined => {
-          const tagName = element.tagName ? element.tagName.toLowerCase() : '';
-          const role = element.getAttribute ? element.getAttribute('role') : null;
-
-          if (
-            this.ignoredTags.has(tagName) ||
-            role === 'navigation' ||
-            role === 'banner' ||
-            role === 'contentinfo'
-          ) {
-            return [];
-          }
-
-          if (tagName === 'a') {
-            return [{ type: 'text', content: element.textContent || '' }];
-          }
-
-          return undefined;
-        },
-      });
-
-      return markdown;
+      walk(body);
+      return text.trim();
     } catch (error) {
-      console.error('[EdgePulse] Failed to convert HTML to Markdown:', error);
+      console.error('[AleteEdge] Failed to convert HTML to Markdown:', error);
       return undefined;
     }
   }

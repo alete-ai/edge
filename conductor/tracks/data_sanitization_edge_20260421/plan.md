@@ -1,20 +1,20 @@
-# Implementation Plan: EdgePulse Privacy-First Data Sanitization Layer
+# Implementation Plan: AleteEdge Data Sanitization Layer
 
-This plan outlines the "Structural Resilience" and "Metabolic Efficiency" path for the `data-sanitization-edge` track. We follow the **Research -> Strategy -> Execution** lifecycle with explicit "Survival Metrics."
+This plan outlines the technical path for the `data-sanitization-edge` track. We follow the **Research -> Strategy -> Execution** lifecycle with explicit success metrics.
 
-## Phase 1: Substrate Preparation & Setup
+## Phase 1: Technical Foundation
 Goal: Establish the technical foundation for the sanitization layer.
 
 - [ ] **Research: Library Benchmarking**
     - [ ] Evaluate `@hackylabs/deep-redact` for edge runtime compatibility.
-    - [ ] Confirm "Structural Resilience" (zero-dependency) in browser and workers.
+    - [ ] Confirm performance in browser and workers.
 - [ ] **Setup: Module Scaffold**
-    - [ ] Create `packages/edge-pulse/src/sanitization/` directory.
+    - [ ] Create `src/sanitization/` directory.
     - [ ] Create `Redactor.ts` class with basic redact functionality.
 - [ ] **Install Dependencies**
-    - [ ] `pnpm add @hackylabs/deep-redact` in `packages/edge-pulse/`.
+    - [ ] `pnpm add @hackylabs/deep-redact`.
 
-## Phase 2: Pattern Evolution (Regex Development)
+## Phase 2: Pattern Development (Regex)
 Goal: Develop robust, high-accuracy patterns for sensitive data.
 
 - [ ] **PII Pattern Development**
@@ -26,28 +26,28 @@ Goal: Develop robust, high-accuracy patterns for sensitive data.
 - [ ] **Credentials Pattern Development**
     - [ ] Add API Key patterns (AWS, Stripe, OpenAI, etc.).
     - [ ] Implement detection for SSH keys and common password fields.
-- [ ] **Optimization: Performance Edge**
-    - [ ] Audit all regex for "Catastrophic Backtracking" to ensure "Metabolic Efficiency."
+- [ ] **Optimization: Performance**
+    - [ ] Audit all regex for "Catastrophic Backtracking" to ensure minimal overhead.
 
 ## Phase 3: Pipeline Integration
-Goal: Seamlessly integrate the sanitization layer into the EdgePulse ingestion pipeline.
+Goal: Seamlessly integrate the sanitization layer into the AleteEdge ingestion pipeline.
 
 - [ ] **Ingestion Hook**
-    - [ ] Identify the exact "Pulse Point" in the ingestion pipeline where markdown is finalized.
+    - [ ] Identify the point in the ingestion pipeline where markdown is finalized.
     - [ ] Insert the `Redactor.redact()` call after classification but before output.
 - [ ] **Configuration Layer**
     - [ ] Allow users to toggle specific categories (e.g., `redactFinancials: true`).
     - [ ] Implement custom placeholder overrides (e.g., `[SECRET]` instead of `[REDACTED]`).
 
-## Phase 4: Validation & Survival Testing
-Goal: Verify the "Privacy-by-Design" mandate with empirical proof.
+## Phase 4: Validation & Testing
+Goal: Verify the privacy-first mandate with empirical proof.
 
-- [ ] **Automated Testing: Privacy Shield**
-    - [ ] Create `packages/edge-pulse/src/sanitization/Redactor.spec.ts`.
-    - [ ] Run test cases against 50+ "Toxic" markdown snippets (simulated sensitive data).
-- [ ] **Benchmarking: Metabolic Sensor**
+- [ ] **Automated Testing**
+    - [ ] Create `src/sanitization/Redactor.spec.ts`.
+    - [ ] Run test cases against 50+ markdown snippets (simulated sensitive data).
+- [ ] **Benchmarking**
     - [ ] Measure latency overhead on large markdown files (10KB - 100KB).
-    - [ ] Ensure the "Performance Edge" (<10ms per 1KB) is maintained.
-- [ ] **Documentation: The Mythos**
-    - [ ] Document the sanitization layer as a key "High-Status" feature in the main README.
-    - [ ] Provide examples of "Clean Signals" for the Marcus (GTM) persona.
+    - [ ] Ensure high performance (<10ms per 1KB) is maintained.
+- [ ] **Documentation**
+    - [ ] Document the sanitization layer as a key feature in the main README.
+    - [ ] Provide examples of sanitized output.

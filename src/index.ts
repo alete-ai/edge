@@ -1,7 +1,7 @@
 import { Extractor, type ExtractorOptions } from './extractor.js';
 import { ContentClassifier } from './classifier.js';
 
-export interface EdgePulseResult {
+export interface AleteEdgeResult {
   markdown: string;
   label: string;
   metadata?: {
@@ -10,7 +10,7 @@ export interface EdgePulseResult {
   };
 }
 
-export class EdgePulse {
+export class AleteEdge {
   private extractor: Extractor;
   private classifier: ContentClassifier;
 
@@ -22,7 +22,7 @@ export class EdgePulse {
   /**
    * Processes a raw HTML string and returns semantic Markdown and a genre label.
    */
-  public async process(html: string): Promise<EdgePulseResult> {
+  public async process(html: string): Promise<AleteEdgeResult> {
     const markdown = this.extractor.extract(html) || '';
     const label = this.classifier.classify(markdown);
 

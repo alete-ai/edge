@@ -37,6 +37,7 @@ training/synthetic.json
 # Testing
 coverage/
 *.log
+*.tgz
 
 # Dev
 worktree/

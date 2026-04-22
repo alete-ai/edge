@@ -1,6 +1,0 @@
-{
-  "id": "npm_bundling_20260421",
-  "name": "@alete-ai/edge: High-Efficiency NPM Substrate",
-  "status": "Active",
-  "description": "Bundling the core library and neural weights into a production-ready npm package."
-}

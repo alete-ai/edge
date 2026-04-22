@@ -1,37 +1,37 @@
-# EdgePulse: Neural Extraction & Semantic Bucketing Library
+# AleteEdge: HTML Extraction & Semantic Classification Library
 
-EdgePulse is a standalone TypeScript library designed for fast, on-device content extraction and semantic classification. It transforms raw HTML into clean, semantic Markdown and categorizes it into high-level intent buckets.
+AleteEdge is a standalone TypeScript library designed for fast, on-device content extraction and semantic classification. It transforms raw HTML into clean, semantic Markdown and categorizes it into high-level intent categories.
 
 ## Architecture
 
-EdgePulse consists of three primary functional layers:
+AleteEdge consists of three primary functional layers:
 
 ### 1. DOM Simulation: `linkedom`
 Raw HTML is processed through `linkedom` to provide a lightweight, high-performance DOM simulation environment. This enables safe parsing and traversal of content in environments like Service Workers or Node.js where a native `window` object is unavailable.
 
-### 2. Content Extraction: `dom-to-semantic-markdown`
+### 2. Content Extraction: `Extractor`
 Extraction involves identifying the core content within the HTML. The library parses the DOM tree, removes navigational elements and boilerplate, and identifies semantic structures to produce high-fidelity Markdown.
 
-### 3. Semantic Classification: `wink-nlp`
-Once extracted, content is classified using ultra-fast Naive Bayes classification (Wink NLP). The library buckets content into a hierarchical taxonomy (e.g., `Restricted:Financial`, `Educational:Instruction`) in under 50ms.
+### 3. Semantic Classification: `ContentClassifier`
+Once extracted, content is classified using ultra-fast Naive Bayes classification (Wink NLP). The library categorizes content into a hierarchical taxonomy (e.g., `Restricted:Financial`, `Educational:Instruction`) in under 50ms.
 
 ## Features
 
 - **Edge-First:** Optimized for Service Workers, Chrome Extensions, and edge functions.
 - **Zero-Dependency Core:** Designed for high performance and low bundle size.
-- **Hierarchical Classification:** Refined bucketing for automated content organization.
-- **Privacy Sentinel:** High recall for sensitive content detection (Financial, Health, PII).
+- **Hierarchical Classification:** Refined categorization for automated content organization.
+- **Privacy Layer:** High recall for sensitive content detection (Financial, Health, PII).
 - **AGPL-3.0 Licensed:** Ensuring the open-source integrity of the toolset.
 
 ## Usage
 
 ```typescript
-import { EdgePulse } from 'edge-pulse';
+import { AleteEdge } from '@alete-ai/edge';
 
-const pulse = new EdgePulse();
+const edge = new AleteEdge();
 
 const html = '<html>...</html>';
-const { markdown, label, metadata } = await pulse.process(html);
+const { markdown, label, metadata } = await edge.process(html);
 
 console.log(`Label: ${label}`); // e.g. "Informational:News"
 console.log(`Words: ${metadata.wordCount}`);

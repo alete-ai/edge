@@ -1,4 +1,4 @@
-# EdgePulse: Neural Extraction & Semantic Bucketing Library
+# AleteEdge: Content Extraction & Classification Library
 
 Navigate the artifacts for this track:
 - [Specification](./spec.md)
