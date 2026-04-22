@@ -1,0 +1,39 @@
+# EdgePulse Root .gitignore
+
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Training Data (Large/Derived)
+training/dataset.json
+training/synthetic.json
+
+# Local env
+.env
+.env.*
+!.env.example
+
+# IDEs
+.vscode/
+.idea/
+
+# Testing
+coverage/
+*.log

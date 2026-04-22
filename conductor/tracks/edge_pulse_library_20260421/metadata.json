@@ -1,0 +1,6 @@
+{
+  "id": "edge_pulse_library_20260421",
+  "name": "EdgePulse: Neural Extraction & Semantic Bucketing Library",
+  "status": "completed",
+  "description": "Standalone AGPL-3.0 library for HTML -> Markdown extraction and hierarchical semantic classification. Features a multi-substrate training pipeline (X-GENRE, Financial, Synthetic) and on-device Wink NLP categorization."
+}
