@@ -24,7 +24,7 @@ export class ContentClassifier {
   private preprocess(text: string): string[] {
     const doc = this.nlp.readDoc(text);
     return doc.tokens()
-      .filter((t: any) => !t.out(this.its.stopWordFlag) && t.out(this.its.type) === 'word')
+      .filter((t: any) => !t.out(this.its.stopWordFlag) && (t.out(this.its.type) === 'word' || t.out() === '[' || t.out() === ']'))
       .out(this.its.stem);
   }
 

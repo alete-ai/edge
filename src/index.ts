@@ -1,4 +1,4 @@
-import { Extractor, type ExtractorOptions } from './extractor.js'
+import { Extractor, ExtractMode, type ExtractorOptions } from './extractor.js'
 import { ContentClassifier } from './classifier.js'
 import { Redactor, type RedactorOptions } from './sanitization/Redactor.js'
 
@@ -34,10 +34,17 @@ export class AleteEdge {
 
   /**
    * Processes a raw HTML string and returns semantic Markdown and a genre label.
+   * Implementation follows a two-pass strategy:
+   * 1. SIGNAL Pass: Extract markers (buttons, labels) for accurate classification.
+   * 2. SEMANTIC Pass: Clean, article-like extraction for LLM consumption.
    */
   public async process(html: string): Promise<AleteEdgeResult> {
-    let markdown = this.extractor.extract(html) || ''
-    const label = this.classifier.classify(markdown)
+    // Pass 1: Signal Extraction for Classification
+    const signalMarkdown = this.extractor.extract(html, ExtractMode.SIGNAL) || ''
+    const label = this.classifier.classify(signalMarkdown)
+
+    // Pass 2: Semantic Extraction for high-fidelity output
+    let markdown = this.extractor.extract(html, ExtractMode.SEMANTIC) || ''
 
     if (this.redactor) {
       markdown = this.redactor.redact(markdown)
@@ -54,10 +61,10 @@ export class AleteEdge {
   }
 
   /**
-   * Only extract markdown without classification.
+   * Only extract markdown without classification. Defaults to SEMANTIC mode.
    */
-  public extract(html: string): string | undefined {
-    let markdown = this.extractor.extract(html)
+  public extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): string | undefined {
+    let markdown = this.extractor.extract(html, mode)
     if (markdown && this.redactor) {
       markdown = this.redactor.redact(markdown)
     }

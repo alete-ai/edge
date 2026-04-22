@@ -1,0 +1,6 @@
+{
+  "id": "reproducible_training_pipeline_20260422",
+  "name": "Reproducible Training & Audit Pipeline",
+  "status": "in-progress",
+  "description": "Establish a standardized 'pnpm train' command that executes the full data-to-weights pipeline and generates a timestamped audit report."
+}

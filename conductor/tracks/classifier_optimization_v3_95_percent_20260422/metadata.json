@@ -1,0 +1,6 @@
+{
+  "id": "classifier_optimization_v3_95_percent_20260422",
+  "name": "Classifier Precision Optimization (>95%)",
+  "status": "in-progress",
+  "description": "Achieve >95% overall classification precision through semantic migration and feature engineering while maintaining sub-10ms latency."
+}

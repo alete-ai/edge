@@ -1,0 +1,82 @@
+{
+  "timestamp": "2026-04-22T18:19:37.646Z",
+  "totalSamples": 3680,
+  "trainSamples": 3312,
+  "valSamples": 368,
+  "totalTokens": 1007761,
+  "accuracy": "67.93%",
+  "labelDistribution": {
+    "Social:Forum": 133,
+    "Restricted:Health": 94,
+    "Educational:Instruction": 199,
+    "Informational:Research": 284,
+    "Other:General": 60,
+    "Informational:News": 329,
+    "Creative:Prose": 101,
+    "Informational:Blog": 219,
+    "Commercial:Promotion": 249,
+    "Functional:App": 935,
+    "Restricted:Financial": 565,
+    "Restricted:PII": 92,
+    "Restricted:Legal": 52
+  },
+  "perLabelAccuracy": {
+    "Informational:Research": {
+      "total": 22,
+      "correct": 12
+    },
+    "Commercial:Promotion": {
+      "total": 38,
+      "correct": 16
+    },
+    "Functional:App": {
+      "total": 115,
+      "correct": 115
+    },
+    "Restricted:Legal": {
+      "total": 12,
+      "correct": 6
+    },
+    "Restricted:Financial": {
+      "total": 52,
+      "correct": 52
+    },
+    "Social:Forum": {
+      "total": 15,
+      "correct": 1
+    },
+    "Restricted:PII": {
+      "total": 8,
+      "correct": 1
+    },
+    "Informational:News": {
+      "total": 28,
+      "correct": 13
+    },
+    "Educational:Instruction": {
+      "total": 22,
+      "correct": 13
+    },
+    "Creative:Prose": {
+      "total": 8,
+      "correct": 8
+    },
+    "Other:General": {
+      "total": 10,
+      "correct": 1
+    },
+    "Informational:Blog": {
+      "total": 23,
+      "correct": 4
+    },
+    "Restricted:Health": {
+      "total": 15,
+      "correct": 8
+    }
+  },
+  "config": {
+    "smoothingFactor": 0.5,
+    "considerOnlyPresence": true,
+    "preprocessing": "wink-nlp stem + preserve brackets []"
+  }
+}

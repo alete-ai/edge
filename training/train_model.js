@@ -20,13 +20,12 @@ nbc.definePrepTasks([
 // Define pre-processing tasks using wink-nlp
 const preprocess = (text) => {
   const doc = nlp.readDoc(text);
-  return doc.tokens()
-    .filter((t) => !t.out(its.stopWordFlag) && t.out(its.type) === 'word')
+  const tokens = doc.tokens()
+    .filter((t) => !t.out(its.stopWordFlag) && (t.out(its.type) === 'word' || t.out() === '[' || t.out() === ']'))
     .out(its.stem);
+  return tokens;
 };
 
-// We don't use nbc.definePrepTasks because we'll process manually 
-// to have full control with wink-nlp.
 nbc.defineConfig({
   considerOnlyPresence: true,
   smoothingFactor: 0.5
@@ -34,7 +33,9 @@ nbc.defineConfig({
 
 const datasetPath = path.join(__dirname, 'dataset.json');
 const syntheticPath = path.join(__dirname, 'synthetic.json');
+const realWebPath = path.join(__dirname, 'real_web_data.json');
 const weightsPath = path.join(__dirname, '../src/model/weights.json');
+const reportsDir = path.join(__dirname, 'reports');
 
 // X-GENRE to Hierarchical Mapping
 const labelMap = {
@@ -46,25 +47,39 @@ const labelMap = {
   'Promotion': 'Commercial:Promotion',
   'Prose/Lyrical': 'Creative:Prose',
   'Legal': 'Restricted:Legal',
-  'Other': 'Other:General'
+  'Other': 'Other:General',
+  'Functional:App': 'Functional:App',
+  'Restricted:Financial': 'Restricted:Financial',
+  'Restricted:Health': 'Restricted:Health',
+  'Restricted:PII': 'Restricted:PII'
 };
 
 console.log('Loading datasets...');
 const xGenreData = JSON.parse(fs.readFileSync(datasetPath, 'utf8'));
 const syntheticData = JSON.parse(fs.readFileSync(syntheticPath, 'utf8'));
+const realWebData = fs.existsSync(realWebPath) ? JSON.parse(fs.readFileSync(realWebPath, 'utf8')) : [];
 
-const allData = [
+let allData = [
   ...xGenreData.map(d => ({ text: d.text, label: labelMap[d.label] || 'Other:General' })),
-  ...syntheticData
+  ...syntheticData.map(d => ({ text: d.text, label: labelMap[d.label] || d.label })),
+  ...realWebData
 ];
 
-console.log(`Training on ${allData.length} total samples...`);
+// Shuffle data
+allData = allData.sort(() => Math.random() - 0.5);
+
+// Split data (90% train, 10% validation)
+const splitIndex = Math.floor(allData.length * 0.9);
+const trainData = allData.slice(0, splitIndex);
+const valData = allData.slice(splitIndex);
+
+console.log(`Training on ${trainData.length} samples, validating on ${valData.length}...`);
 
 let totalTokens = 0;
 const labelStats = {};
 
-allData.forEach((item, index) => {
-  if (index % 500 === 0) console.log(`Processed ${index} samples...`);
+trainData.forEach((item, index) => {
+  if (index % 1000 === 0) console.log(`Processed ${index} training samples...`);
   const tokens = preprocess(item.text);
   if (tokens.length > 0) {
     totalTokens += tokens.length;
@@ -73,33 +88,71 @@ allData.forEach((item, index) => {
   }
 });
 
-console.log(`Total tokens processed: ${totalTokens}`);
-console.log('Label distribution:', JSON.stringify(labelStats, null, 2));
-
 console.log('Consolidating model...');
 nbc.consolidate();
 
-// Check if consolidation actually worked by checking predictions on training data
-const bankTest = preprocess("Bank Statement Checking Account Balance Transaction History");
-console.log(`Prediction for Bank (Training Data): ${nbc.predict(bankTest.join(' '))}`);
+// Validation
+console.log('Running validation...');
+let correct = 0;
+const perLabelMetrics = {};
 
-const instrTest = preprocess("How to bake a cake. First, preheat the oven.");
-console.log(`Prediction for Instruction (Training Data): ${nbc.predict(instrTest.join(' '))}`);
+valData.forEach(item => {
+  const tokens = preprocess(item.text);
+  if (tokens.length > 0) {
+    const prediction = nbc.predict(tokens.join(' '));
+    if (!perLabelMetrics[item.label]) perLabelMetrics[item.label] = { total: 0, correct: 0 };
+    perLabelMetrics[item.label].total++;
+    
+    if (prediction === item.label) {
+      correct++;
+      perLabelMetrics[item.label].correct++;
+    }
+  }
+});
 
-console.log('Exporting weights...');
-const weights = nbc.exportJSON();
-
-// Ensure the directory exists
-const modelDir = path.dirname(weightsPath);
-if (!fs.existsSync(modelDir)) {
-  fs.mkdirSync(modelDir, { recursive: true });
+const perLabelAccuracyWithPercent = {};
+for (const [label, stats] of Object.entries(perLabelMetrics)) {
+  perLabelAccuracyWithPercent[label] = {
+    ...stats,
+    accuracy: ((stats.correct / stats.total) * 100).toFixed(2) + '%'
+  };
 }
 
+const sourceStats = {};
+allData.forEach(d => {
+  const source = d.source || (d.text.includes('[') ? 'synthetic' : 'x-genre');
+  sourceStats[source] = (sourceStats[source] || 0) + 1;
+});
+
+const accuracy = (correct / valData.length) * 100;
+console.log(`Validation Accuracy: ${accuracy.toFixed(2)}%`);
+
+// Prepare Audit Report
+const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+const report = {
+  timestamp: new Date().toISOString(),
+  dataSources: sourceStats,
+  totalSamples: allData.length,
+  trainSamples: trainData.length,
+  valSamples: valData.length,
+  totalTokens,
+  overallAccuracy: accuracy.toFixed(2) + '%',
+  labelDistribution: labelStats,
+  perLabelAccuracy: perLabelAccuracyWithPercent,
+  config: {
+    smoothingFactor: 0.5,
+    considerOnlyPresence: true,
+    preprocessing: "wink-nlp stem + preserve brackets []"
+  }
+};
+
+if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir);
+const reportPath = path.join(reportsDir, `run_${timestamp}.json`);
+fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+console.log(`Audit report saved to ${reportPath}`);
+
+// Export weights
+console.log('Exporting weights...');
+const weights = nbc.exportJSON();
 fs.writeFileSync(weightsPath, weights);
 console.log(`Model weights saved to ${weightsPath}`);
-
-// Quick test
-const testText = "How to bake a cake. First, preheat the oven to 350 degrees.";
-const testTokens = preprocess(testText);
-const prediction = nbc.predict(testTokens.join(' '));
-console.log(`Test Prediction for 'Instruction': ${prediction}`);

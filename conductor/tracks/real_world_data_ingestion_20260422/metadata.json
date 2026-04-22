@@ -1,0 +1,6 @@
+{
+  "id": "real_world_data_ingestion_20260422",
+  "name": "Real-World Data Ingestion & Signal Training",
+  "status": "in-progress",
+  "description": "Automated pipeline to fetch 20+ real-world examples per category, extract SIGNAL mode data, and refine the classifier substrate."
+}

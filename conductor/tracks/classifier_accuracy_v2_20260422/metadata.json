@@ -1,0 +1,6 @@
+{
+  "id": "classifier_accuracy_v2_20260422",
+  "name": "Classifier Precision Upgrade",
+  "status": "in-progress",
+  "description": "Retrain and potentially migrate the content classifier to resolve misclassifications of News lists and App/Login pages."
+}
