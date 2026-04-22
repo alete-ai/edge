@@ -32,6 +32,29 @@ describe('EdgePulse (Unified API)', () => {
     expect(result.metadata?.wordCount).toBe(3);
   });
 
+  it('should redact sensitive information in the process pipeline', async () => {
+    const mockedExtractor = mock(Extractor);
+    const mockedClassifier = mock(ContentClassifier);
+
+    const mockHtml = '<html><body>Email: test@example.com</body></html>';
+    const mockMarkdown = 'Email: test@example.com';
+    const mockLabel = 'Other:General';
+
+    when(mockedExtractor.extract(mockHtml)).thenReturn(mockMarkdown);
+    when(mockedClassifier.classify(anyString())).thenReturn(mockLabel);
+
+    // No redactor option provided: should default to ON
+    const pulse = new EdgePulse({}, {
+      extractor: instance(mockedExtractor),
+      classifier: instance(mockedClassifier)
+    });
+
+    const result = await pulse.process(mockHtml);
+
+    expect(result.markdown).toBe('Email: [EMAIL_REDACTED]');
+    expect(result.label).toBe(mockLabel);
+  });
+
   it('should handle extraction failures gracefully', async () => {
     const mockedExtractor = mock(Extractor);
     const mockedClassifier = mock(ContentClassifier);
