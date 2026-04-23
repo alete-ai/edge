@@ -24,8 +24,10 @@ export class Model2VecEngine {
   private embeddings: Float32Array | null = null
   private config: M2VModelConfig | null = null
 
-  constructor(_modelPath?: string) {
-    // modelPath ignored as we use zero-config bundled assets
+  private modelPath: string | null = null
+
+  constructor(modelPath?: string) {
+    this.modelPath = modelPath || null;
   }
 
   async init() {
@@ -39,31 +41,38 @@ export class Model2VecEngine {
 
     // 3. Load Embeddings (Always Int4 for optimized footprint)
     const arrayBuffer = await this.loadBinaryAsset('m2v_embeddings.bin');
-    const meta = await this.loadJsonAsset('m2v_quant_meta.json');
+    const metaData = await this.loadJsonAsset('m2v_quant_meta.json');
     
     const i4Packed = new Uint8Array(arrayBuffer);
-    this.embeddings = new Float32Array(meta.count);
-    for (let i = 0; i < meta.count; i += 2) {
+    this.embeddings = new Float32Array(metaData.count);
+    for (let i = 0; i < metaData.count; i += 2) {
       const byte = i4Packed[i / 2];
       const val1 = (byte >> 4) & 0x0F;
       const val2 = byte & 0x0F;
       
-      this.embeddings[i] = (val1 / meta.scale4) + meta.min;
-      if (i + 1 < meta.count) {
-        this.embeddings[i + 1] = (val2 / meta.scale4) + meta.min;
+      this.embeddings[i] = (val1 / metaData.scale4) + metaData.min;
+      if (i + 1 < metaData.count) {
+        this.embeddings[i + 1] = (val2 / metaData.scale4) + metaData.min;
       }
     }
   }
 
   private async loadJsonAsset(fileName: string): Promise<any> {
     const isNode = typeof process !== 'undefined' && process.versions?.node;
-    if (isNode) {
+    if (isNode && !this.modelPath?.startsWith('http')) {
        const fs = await import('fs');
        const path = await import('path');
        const { fileURLToPath } = await import('url');
-       const __dirname = path.dirname(fileURLToPath(import.meta.url));
-       let p = path.resolve(__dirname, 'model', fileName);
-       if (!fs.existsSync(p)) p = path.resolve(__dirname, fileName);
+       
+       let p: string;
+       if (this.modelPath) {
+         p = path.resolve(this.modelPath, fileName);
+       } else {
+         const __dirname = path.dirname(fileURLToPath(import.meta.url));
+         p = path.resolve(__dirname, 'model', fileName);
+         if (!fs.existsSync(p)) p = path.resolve(__dirname, fileName);
+       }
+       
        return JSON.parse(fs.readFileSync(p, 'utf-8'));
     }
     const response = await fetch(this.getAssetUrl(fileName));
@@ -73,22 +82,26 @@ export class Model2VecEngine {
   private async loadBinaryAsset(fileName: string): Promise<ArrayBuffer> {
     const isNode = typeof process !== 'undefined' && process.versions?.node;
     
-    if (isNode) {
+    if (isNode && !this.modelPath?.startsWith('http')) {
       const fs = await import('fs');
       const path = await import('path');
       const { fileURLToPath } = await import('url');
       
       let fullPath: string;
-      try {
-        const __dirname = path.dirname(fileURLToPath(import.meta.url));
-        fullPath = path.resolve(__dirname, 'model', fileName);
-        
-        // Handle dist context
-        if (!fs.existsSync(fullPath)) {
-           fullPath = path.resolve(__dirname, fileName);
+      if (this.modelPath) {
+        fullPath = path.resolve(this.modelPath, fileName);
+      } else {
+        try {
+          const __dirname = path.dirname(fileURLToPath(import.meta.url));
+          fullPath = path.resolve(__dirname, 'model', fileName);
+          
+          // Handle dist context
+          if (!fs.existsSync(fullPath)) {
+             fullPath = path.resolve(__dirname, fileName);
+          }
+        } catch (e) {
+          fullPath = path.resolve(process.cwd(), 'src/model', fileName);
         }
-      } catch (e) {
-        fullPath = path.resolve(process.cwd(), 'src/model', fileName);
       }
       
       if (!fs.existsSync(fullPath)) {
@@ -104,22 +117,32 @@ export class Model2VecEngine {
   }
 
   private getAssetUrl(fileName: string): string {
+    if (this.modelPath && this.modelPath.startsWith('http')) {
+      return this.modelPath.endsWith('/') ? `${this.modelPath}${fileName}` : `${this.modelPath}/${fileName}`;
+    }
+
     const g = globalThis as any;
     
     // 1. WebExtension Context
     if (g.chrome?.runtime?.getURL) {
-      return g.chrome.runtime.getURL(`model/${fileName}`);
+      const base = this.modelPath || 'model';
+      return g.chrome.runtime.getURL(`${base}/${fileName}`);
     } else if (g.browser?.runtime?.getURL) {
-      return g.browser.runtime.getURL(`model/${fileName}`);
+      const base = this.modelPath || 'model';
+      return g.browser.runtime.getURL(`${base}/${fileName}`);
     }
     
     // 2. Modern Browser/Bundler Context (Vite/Webpack/Rollup)
     try {
+      if (this.modelPath) {
+        return new URL(fileName, this.modelPath).href;
+      }
       // Resolve relative to the bundle itself
       return new URL(`./model/${fileName}`, import.meta.url).href;
     } catch (e) {
       // Fallback to domain root
-      return `/model/${fileName}`;
+      const base = this.modelPath || '/model';
+      return base.endsWith('/') ? `${base}${fileName}` : `${base}/${fileName}`;
     }
   }
 
