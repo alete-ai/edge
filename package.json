@@ -38,6 +38,10 @@
   "author": "Stoyan Dimitrov <https://github.com/StoyanD>",
   "license": "AGPL-3.0",
   "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "files": [
     "dist"
   ],
