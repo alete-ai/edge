@@ -11,5 +11,7 @@ export default defineConfig({
   treeshake: true,
   splitting: true,
   target: 'esnext',
+  noExternal: ['@huggingface/transformers'],
+  external: ['onnxruntime-node', 'fs', 'path', 'url'],
   // Model assets are externalized to dist/model/ via postbuild
 });

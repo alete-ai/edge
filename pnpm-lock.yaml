@@ -11,9 +11,6 @@ importers:
       '@hackylabs/deep-redact':
         specifier: ^3.0.5
         version: 3.0.5
-      '@huggingface/transformers':
-        specifier: ^4.2.0
-        version: 4.2.0
       '@mozilla/readability':
         specifier: ^0.6.0
         version: 0.6.0
@@ -36,6 +33,9 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0
     devDependencies:
+      '@huggingface/transformers':
+        specifier: ^4.2.0
+        version: 4.2.0
       '@types/jsdom':
         specifier: ^28.0.1
         version: 28.0.1
