@@ -1,7 +1,7 @@
 import Classifier from 'wink-naive-bayes-text-classifier';
 import winkNLP from 'wink-nlp';
 import model from 'wink-eng-lite-web-model';
-import { type SignalMetadata } from './extractor.js';
+import { type StructuralMetadata } from './extractor.js';
 import { Model2VecEngine } from './model2vec_engine.js';
 
 // We'll import the weights as a JSON module.
@@ -13,19 +13,22 @@ export class ContentClassifier {
   private nlp: any;
   private its: any;
   private m2v: Model2VecEngine;
+  private ready: Promise<void>;
 
-  constructor() {
+  constructor(modelPath?: string) {
     this.nbc = Classifier();
     this.nlp = winkNLP(model);
     this.its = this.nlp.its;
-    this.m2v = new Model2VecEngine();
+    this.m2v = new Model2VecEngine(modelPath);
 
     // Load the pre-trained Naive Bayes model as fallback/legacy
     this.nbc.importJSON(JSON.stringify(weights));
     this.nbc.consolidate();
+    
+    this.ready = this.m2v.init();
   }
 
-  private preprocess(text: string, metadata?: SignalMetadata): string[] {
+  private preprocess(text: string, metadata?: StructuralMetadata): string[] {
     const doc = this.nlp.readDoc(text);
     const unigrams = doc.tokens()
       .filter((t: any) => !t.out(this.its.stopWordFlag) && (t.out(this.its.type) === 'word' || t.out() === '[' || t.out() === ']'))
@@ -49,7 +52,7 @@ export class ContentClassifier {
 
     const tokens = [...unigrams, ...bigrams, ...charBigrams];
 
-    // Add metadata tokens if available (Repeated 5x for weighting)
+    // Add structural metadata tokens if available (Repeated 5x for weighting)
     if (metadata) {
       const metaTokens = [];
       if (metadata.buttonCount > 10) metaTokens.push('__btn_high');
@@ -82,13 +85,23 @@ export class ContentClassifier {
 
   /**
    * Classifies Markdown or plain text into a genre bucket.
-   * Priority: Model2Vec (Neural) -> Naive Bayes (Statistical Fallback)
+   * Priority: Model2Vec (AI Inference) -> Naive Bayes (Statistical Fallback)
    */
-  public async classify(text: string, metadata?: SignalMetadata): Promise<string> {
+  public async classify(text: string, metadata?: StructuralMetadata): Promise<string> {
+    await this.ready;
     try {
       const result = await this.m2v.classify(text);
-      // If we have very low confidence or it's 'Other:General', we could potentially cross-check
-      return result.label;
+      
+      // If AI Inference says Financial or Legal with very high confidence, we cross-check with NB
+      // because news articles often trigger these restricted categories.
+      const tokens = this.preprocess(text, metadata);
+      const nbLabel = tokens.length > 0 ? this.nbc.predict(tokens) : null;
+
+      if (result.score > 0.99 && !['Restricted:Financial', 'Restricted:Legal', 'Restricted:Health'].includes(result.label)) {
+        return result.label;
+      }
+      
+      return nbLabel || result.label;
     } catch (e) {
       console.warn('Model2Vec classification failed, falling back to Naive Bayes:', e);
       const tokens = this.preprocess(text, metadata);
@@ -100,15 +113,48 @@ export class ContentClassifier {
   /**
    * Returns a probability map for all labels.
    */
-  public async predictProbabilities(text: string, metadata?: SignalMetadata): Promise<Record<string, number>> {
+  public async predictProbabilities(text: string, metadata?: StructuralMetadata): Promise<Record<string, number>> {
+    await this.ready;
     try {
       const result = await this.m2v.classify(text);
+      
+      const tokens = this.preprocess(text, metadata);
+      const shouldCrossCheck = ['Restricted:Financial', 'Restricted:Legal', 'Restricted:Health'].includes(result.label) || result.score <= 0.99;
+
+      if (shouldCrossCheck && tokens.length > 0) {
+        const odds = this.nbc.computeOdds(tokens);
+        // Convert log-odds (base 2) to probabilities
+        const scores = odds.map(([label, logOdds]: [string, number]) => ({
+          label,
+          score: Math.pow(2, logOdds)
+        }));
+        const totalScore = scores.reduce((sum: number, item: any) => sum + item.score, 0);
+        
+        const probabilities: Record<string, number> = {};
+        scores.forEach((item: any) => {
+          probabilities[item.label] = item.score / totalScore;
+        });
+        return probabilities;
+      }
+
       return result.all;
     } catch (e) {
+      console.warn('Model2Vec probabilities failed, falling back to Naive Bayes:', e);
       const tokens = this.preprocess(text, metadata);
       if (tokens.length === 0) return {};
-      // Naive Bayes probabilities not fully implemented in legacy wink adapter
-      return {}; 
+      
+      const odds = this.nbc.computeOdds(tokens);
+      const scores = odds.map(([label, logOdds]: [string, number]) => ({
+        label,
+        score: Math.pow(2, logOdds)
+      }));
+      const totalScore = scores.reduce((sum: number, item: any) => sum + item.score, 0);
+      
+      const probabilities: Record<string, number> = {};
+      scores.forEach((item: any) => {
+        probabilities[item.label] = item.score / totalScore;
+      });
+      return probabilities;
     }
   }
 }

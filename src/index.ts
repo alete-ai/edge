@@ -1,15 +1,16 @@
-import { Extractor, ExtractMode, type ExtractorOptions, type SignalMetadata } from './extractor.js'
+import { Extractor, ExtractMode, type ExtractorOptions, type StructuralMetadata } from './extractor.js'
 import { ContentClassifier } from './classifier.js'
 import { Redactor, type RedactorOptions } from './sanitization/Redactor.js'
 
 export interface AleteEdgeOptions extends ExtractorOptions {
   redactor?: RedactorOptions | boolean
+  modelPath?: string
 }
 
 export interface AleteEdgeTiming {
   total: number
-  extraction_signal: number
-  classification: number
+  extraction_structural: number
+  categorization: number
   extraction_semantic: number
   redaction: number
 }
@@ -17,7 +18,7 @@ export interface AleteEdgeTiming {
 export interface AleteEdgeResult {
   markdown: string
   label: string
-  metadata?: SignalMetadata & {
+  metadata?: StructuralMetadata & {
     charCount: number
   }
   timing?: AleteEdgeTiming
@@ -30,7 +31,7 @@ export class AleteEdge {
 
   constructor(options: AleteEdgeOptions = {}, overrides?: { extractor?: Extractor, classifier?: ContentClassifier, redactor?: Redactor }) {
     this.extractor = overrides?.extractor || new Extractor(options)
-    this.classifier = overrides?.classifier || new ContentClassifier()
+    this.classifier = overrides?.classifier || new ContentClassifier(options.modelPath)
 
     if (overrides?.redactor) {
       this.redactor = overrides.redactor
@@ -43,20 +44,20 @@ export class AleteEdge {
   /**
    * Processes a raw HTML string and returns semantic Markdown and a genre label.
    * Implementation follows a two-pass strategy:
-   * 1. SIGNAL Pass: Extract markers (buttons, labels) for accurate classification.
+   * 1. STRUCTURAL Pass: Extract markers (buttons, labels) for accurate categorization.
    * 2. SEMANTIC Pass: Clean, article-like extraction for LLM consumption.
    */
   public async process(html: string): Promise<AleteEdgeResult> {
     const perf = globalThis.performance
     const t0 = perf.now()
     
-    // Pass 1: Signal Extraction for Classification
+    // Pass 1: Structural Extraction for Categorization
     const ts1 = perf.now()
-    const extractionResult = this.extractor.extractWithMetadata(html, ExtractMode.SIGNAL)
+    const extractionResult = this.extractor.extractWithMetadata(html, ExtractMode.STRUCTURAL)
     const te1 = perf.now()
 
-    const signalMarkdown = extractionResult?.markdown || ''
-    const signalMetadata = extractionResult?.metadata || {
+    const structuralMarkdown = extractionResult?.markdown || ''
+    const structuralMetadata = extractionResult?.metadata || {
       buttonCount: 0,
       linkCount: 0,
       imageCount: 0,
@@ -67,7 +68,7 @@ export class AleteEdge {
     }
 
     const tc_start = perf.now()
-    const label = await this.classifier.classify(signalMarkdown, signalMetadata)
+    const label = await this.classifier.classify(structuralMarkdown, structuralMetadata)
     const tc_end = perf.now()
 
     // Pass 2: Semantic Extraction for high-fidelity output
@@ -87,13 +88,13 @@ export class AleteEdge {
       markdown,
       label,
       metadata: {
-        ...signalMetadata,
+        ...structuralMetadata,
         charCount: markdown.length,
       },
       timing: {
         total: t_total - t0,
-        extraction_signal: te1 - ts1,
-        classification: tc_end - tc_start,
+        extraction_structural: te1 - ts1,
+        categorization: tc_end - tc_start,
         extraction_semantic: te2 - ts2,
         redaction: tr_end - tr_start,
       }
@@ -101,7 +102,7 @@ export class AleteEdge {
   }
 
   /**
-   * Only extract markdown without classification. Defaults to SEMANTIC mode.
+   * Only extract markdown without categorization. Defaults to SEMANTIC mode.
    */
   public extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): string | undefined {
     let markdown = this.extractor.extract(html, mode)
@@ -112,9 +113,9 @@ export class AleteEdge {
   }
 
   /**
-   * Only classify text without extraction.
+   * Only categorize text without extraction.
    */
-  public async classify(text: string): Promise<string> {
+  public async categorize(text: string): Promise<string> {
     return this.classifier.classify(text)
   }
 }

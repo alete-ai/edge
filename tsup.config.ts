@@ -11,6 +11,8 @@ export default defineConfig({
   treeshake: true,
   splitting: true,
   target: 'esnext',
-  // Ensure weights.json is bundled appropriately.
-  // Esbuild (used by tsup) will bundle it by default when imported.
+  loader: {
+    '.bin': 'dataurl',
+  },
+  // We remove publicDir because we want to bundle assets for zero-config npm usage
 });

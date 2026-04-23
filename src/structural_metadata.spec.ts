@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { Extractor, ExtractMode } from './extractor.js';
 
-describe('Extractor Structural Signals', () => {
+describe('Extractor Structural Metadata', () => {
   const extractor = new Extractor();
 
   it('should extract metadata from HTML', () => {
@@ -22,7 +22,7 @@ describe('Extractor Structural Signals', () => {
         </body>
       </html>
     `;
-    const result = extractor.extractWithMetadata(html, ExtractMode.SIGNAL);
+    const result = extractor.extractWithMetadata(html, ExtractMode.STRUCTURAL);
     expect(result).toBeDefined();
     if (result) {
       expect(result.metadata.paragraphCount).toBe(2);

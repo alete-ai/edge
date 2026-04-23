@@ -1,0 +1,101 @@
+{
+  "timestamp": "2026-04-23T01:26:58.651Z",
+  "dataSources": {
+    "augmented_web": 1175,
+    "synthetic": 8011,
+    "x-genre": 3001,
+    "web_ingestion": 235
+  },
+  "totalSamples": 12422,
+  "trainSamples": 11179,
+  "valSamples": 1243,
+  "totalTokens": 8017118,
+  "overallAccuracy": "88.90%",
+  "labelDistribution": {
+    "Functional:App": 1590,
+    "Informational:Research": 827,
+    "Restricted:Financial": 1089,
+    "Informational:Blog": 1353,
+    "Social:Forum": 854,
+    "Informational:News": 1404,
+    "Commercial:Promotion": 557,
+    "Educational:Instruction": 743,
+    "Other:General": 594,
+    "Restricted:Legal": 263,
+    "Creative:Prose": 176,
+    "Restricted:PII": 1653,
+    "Restricted:Health": 76
+  },
+  "perLabelAccuracy": {
+    "Other:General": {
+      "total": 48,
+      "correct": 37,
+      "accuracy": "77.08%"
+    },
+    "Restricted:PII": {
+      "total": 171,
+      "correct": 166,
+      "accuracy": "97.08%"
+    },
+    "Informational:Blog": {
+      "total": 167,
+      "correct": 153,
+      "accuracy": "91.62%"
+    },
+    "Informational:Research": {
+      "total": 99,
+      "correct": 80,
+      "accuracy": "80.81%"
+    },
+    "Restricted:Financial": {
+      "total": 149,
+      "correct": 149,
+      "accuracy": "100.00%"
+    },
+    "Functional:App": {
+      "total": 118,
+      "correct": 114,
+      "accuracy": "96.61%"
+    },
+    "Restricted:Health": {
+      "total": 14,
+      "correct": 13,
+      "accuracy": "92.86%"
+    },
+    "Informational:News": {
+      "total": 170,
+      "correct": 146,
+      "accuracy": "85.88%"
+    },
+    "Social:Forum": {
+      "total": 84,
+      "correct": 69,
+      "accuracy": "82.14%"
+    },
+    "Educational:Instruction": {
+      "total": 105,
+      "correct": 89,
+      "accuracy": "84.76%"
+    },
+    "Commercial:Promotion": {
+      "total": 66,
+      "correct": 52,
+      "accuracy": "78.79%"
+    },
+    "Creative:Prose": {
+      "total": 23,
+      "correct": 15,
+      "accuracy": "65.22%"
+    },
+    "Restricted:Legal": {
+      "total": 29,
+      "correct": 22,
+      "accuracy": "75.86%"
+    }
+  },
+  "config": {
+    "smoothingFactor": 0.5,
+    "considerOnlyPresence": true,
+    "preprocessing": "wink-nlp stem + preserve brackets []"
+  }
+}

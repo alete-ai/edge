@@ -20,12 +20,13 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
-    "postbuild": "du -sh dist/*.js dist/*.cjs",
+    "postbuild": "cp -r src/model dist/ && du -sh dist/*.js dist/*.cjs dist/model",
     "prepublishOnly": "pnpm build",
     "train:data:synthetic": "python3 training/generate_synthetic.py",
     "train:data:web": "pnpm tsx training/ingest_web.ts",
     "train:model": "pnpm tsx training/train_model.js",
-    "train": "pnpm train:data:synthetic && pnpm train:data:web && pnpm train:model"
+    "train:quantize": "pnpm tsx training/quantize_embeddings.ts",
+    "train": "pnpm train:data:synthetic && pnpm train:data:web && pnpm train:model && pnpm train:quantize"
   },
   "keywords": [
     "edge",
@@ -38,8 +39,7 @@
   "license": "AGPL-3.0",
   "type": "module",
   "files": [
-    "dist",
-    "src/model/weights.json"
+    "dist"
   ],
   "dependencies": {
     "@hackylabs/deep-redact": "^3.0.5",

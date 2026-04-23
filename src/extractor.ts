@@ -5,18 +5,19 @@ import {
 } from 'dom-to-semantic-markdown'
 import { parseHTML } from 'linkedom'
 
-export enum ExtractMode {
-  /** Preserves UI markers (buttons, forms, nav) for classification. */
-  SIGNAL = 'SIGNAL',
+export const ExtractMode = {
+  /** Preserves UI markers (buttons, forms, nav) for categorization. */
+  STRUCTURAL: 'STRUCTURAL',
   /** Clean, high-fidelity Markdown optimized for LLM consumption. */
-  SEMANTIC = 'SEMANTIC',
-}
+  SEMANTIC: 'SEMANTIC',
+} as const
+export type ExtractMode = (typeof ExtractMode)[keyof typeof ExtractMode]
 
 export interface ExtractorOptions {
   ignoredTags?: string[]
 }
 
-export interface SignalMetadata {
+export interface StructuralMetadata {
   buttonCount: number
   linkCount: number
   imageCount: number
@@ -39,10 +40,10 @@ export class Extractor {
   /**
    * Extracts content and structural metadata from HTML.
    */
-  public extractWithMetadata(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): { markdown: string, metadata: SignalMetadata } | undefined {
+  public extractWithMetadata(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): { markdown: string, metadata: StructuralMetadata } | undefined {
     try {
       const { document } = parseHTML(html)
-      const metadata = this.calculateSignalMetadata(document)
+      const metadata = this.calculateStructuralMetadata(document)
       const markdown = this.extract(html, mode) || ''
       
       return { markdown, metadata }
@@ -68,7 +69,7 @@ export class Extractor {
 
       let htmlToConvert = html
       
-      // Pass 1 (Classification Signal): We skip Readability because it's too 
+      // Pass 1 (Categorization Structural): We skip Readability because it's too 
       // aggressive for non-article pages (Dashboards, Logins).
       // Pass 2 (Semantic Delivery): We use Readability for junk removal if mode is SEMANTIC.
       if (mode === ExtractMode.SEMANTIC) {
@@ -89,7 +90,7 @@ export class Extractor {
       }
       
       const { document: convertDoc } = parseHTML(finalHtml)
-      const customParser = new convertDoc.defaultView.DOMParser()
+      const customParser = new (convertDoc.defaultView?.DOMParser || (globalThis as any).DOMParser)()
 
       const markdown = convert(finalHtml, {
         extractMainContent: false, // Managed by Readability or our mode logic
@@ -107,8 +108,8 @@ export class Extractor {
             return []
           }
 
-          // Signal Mode Special: Preserve UI text markers
-          if (mode === ExtractMode.SIGNAL) {
+          // Structural Mode Special: Preserve UI text markers
+          if (mode === ExtractMode.STRUCTURAL) {
             if (tagName === 'button' || tagName === 'a' || tagName === 'label') {
               return [{ type: 'text', content: `[${element.textContent?.trim() || ''}] ` }]
             }
@@ -128,7 +129,7 @@ export class Extractor {
     }
   }
 
-  private calculateSignalMetadata(document: any): SignalMetadata {
+  private calculateStructuralMetadata(document: any): StructuralMetadata {
     if (!document || !document.querySelectorAll) {
       return {
         buttonCount: 0,

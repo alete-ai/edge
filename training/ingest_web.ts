@@ -33,8 +33,8 @@ async function ingest() {
 
         const html = await response.text();
         
-        // Use SIGNAL mode to capture structural markers for training
-        const result = extractor.extractWithMetadata(html, ExtractMode.SIGNAL);
+        // Use STRUCTURAL mode to capture structural metadata for training
+        const result = extractor.extractWithMetadata(html, ExtractMode.STRUCTURAL);
 
         if (result && result.markdown && result.markdown.trim().length > 50) {
           allData.push({

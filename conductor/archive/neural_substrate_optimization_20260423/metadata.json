@@ -1,0 +1,6 @@
+{
+  "id": "neural_substrate_optimization_20260423",
+  "name": "Neural Substrate Optimization",
+  "status": "completed",
+  "description": "Optimize the library footprint by switching from Float32 to quantized embeddings and externalizing assets to avoid Base64 overhead, while maintaining classification accuracy."
+}

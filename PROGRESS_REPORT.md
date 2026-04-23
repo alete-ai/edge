@@ -32,7 +32,7 @@ This document tracks the strategic evolution, architectural changes, and trainin
     - Verified perfect 100% accuracy for `Functional:App` and `Restricted:Financial` following the SIGNAL mode implementation.
 
 ### 4. Classifier Precision Optimization (v3) - April 22, 2026
-**Status:** In-Progress (88% Achievement)
+**Status:** Completed
 - **Problem:** Weak "General Web" precision (Blogs, Forums, Research).
 - **Solution:** 
     - **Structural Signal Ingestion:** Modified `Extractor.ts` to output `SignalMetadata` (button counts, link density, paragraph ratios).
@@ -75,6 +75,20 @@ This document tracks the strategic evolution, architectural changes, and trainin
             - `total`: End-to-end execution time.
     - **Benefit:** Allows extension UIs (Chrome/Safari) to report precise "Neural Inference" vs "DOM Extraction" times without manual, less accurate external measurement.
     - **Survival Metric:** Verified that adding instrumentation introduces <0.01ms of overhead.
+
+### 6. Neural Substrate Optimization (The Great Condensation) - April 23, 2026
+**Status:** Completed
+- **Initiative:** Minimize library footprint and remove Base64 overhead to ensure high performance on mobile (iOS) and edge environments.
+- **Implementation:** 
+    - **Int4 Quantization:** Developed `training/quantize_embeddings.ts` to compress 14MB Float32 embeddings into a 1.8MB Int4 substrate.
+    - **Bit-Unpacking Engine:** Upgraded `Model2VecEngine` with a pure-JS Int4 bit-unpacking routine, maintaining zero native dependencies.
+    - **Asset Externalization:** Refactored the build pipeline (`tsup.config.ts`) and engine to support dynamic, non-inlined asset loading via `import.meta.url` and `fetch`.
+    - **Zero-Config Autoload:** Verified "just-works" asset resolution across Node.js, Browsers, and WebExtensions (MV3).
+- **Results:** 
+    - **Accuracy Retention:** Maintained **96.14% overall accuracy** (only 0.4% drop from Int8).
+    - **Mass Reduction:** Reduced model asset size from **14MB to 1.8MB** (87% reduction).
+    - **Zero-Config:** Verified 100% path parity between local `vitest` and production `dist/` environments.
+- **Survival Metric:** Achieved 96%+ accuracy with a <2MB total AI mass.
 
 - **Library Version 0.1.1: Documentation & Environment Parity - April 22, 2026**
     - **Status:** Completed

@@ -14,7 +14,7 @@ describe('AleteEdge (Unified API)', () => {
     const mockMarkdown = '# Mock content'
     const mockLabel = 'Informational:News'
 
-    when(mockedExtractor.extractWithMetadata(anything(), ExtractMode.SIGNAL)).thenReturn({
+    when(mockedExtractor.extractWithMetadata(anything(), ExtractMode.STRUCTURAL)).thenReturn({
       markdown: mockMarkdown,
       metadata: {
         buttonCount: 0,
@@ -43,8 +43,8 @@ describe('AleteEdge (Unified API)', () => {
     expect(result.label).toBe(mockLabel)
     expect(result.timing).toBeDefined()
     expect(result.timing?.total).toBeGreaterThan(0)
-    expect(result.timing?.classification).toBeDefined()
-    expect(result.timing?.extraction_signal).toBeDefined()
+    expect(result.timing?.categorization).toBeDefined()
+    expect(result.timing?.extraction_structural).toBeDefined()
     expect(result.timing?.extraction_semantic).toBeDefined()
     expect(result.timing?.redaction).toBeDefined()
   })

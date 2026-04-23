@@ -20,13 +20,22 @@ describe('ContentClassifier', () => {
     expect(await classifier.classify(text)).toBe('Informational:News')
   })
 
+  it('should identify financial news as Informational:News', async () => {
+    const text = `
+      # SpaceX Prepares Tender Offer for Cursor
+      SpaceX is reportedly looking to acquire a stake in AI coding assistant Cursor at a $20 billion valuation.
+      The deal would provide liquidity for early investors like Andreessen Horowitz.
+    `
+    expect(await classifier.classify(text)).toBe('Informational:News')
+  })
+
   it('should identify app/UI content', async () => {
     const text = 'Account Settings Profile Password Change Notifications Privacy Security Logout'
     expect(await classifier.classify(text)).toBe('Functional:App')
   })
 
   it('should default to Other:General for unknown signals', async () => {
-    const text = '...'
+    const text = 'Hello world.'
     expect(await classifier.classify(text)).toBe('Other:General')
   })
 })

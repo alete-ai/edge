@@ -9,7 +9,22 @@
     "https://www.forbes.com/", "https://www.cnbc.com/", "https://www.npr.org/", "https://www.huffpost.com/",
     "https://www.foxnews.com/", "https://www.usatoday.com/", "https://www.latimes.com/", "https://www.chicagotribune.com/",
     "https://www.smh.com.au/", "https://www.theage.com.au/", "https://www.theglobeandmail.com/", "https://www.cbc.ca/news",
-    "https://www.derstandard.at/en", "https://www.elpais.com/elpais/inenglish.html", "https://www.corriere.it/english/", "https://www.gazeta.pl/"
+    "https://www.derstandard.at/en", "https://www.elpais.com/elpais/inenglish.html", "https://www.corriere.it/english/", "https://www.gazeta.pl/",
+    "https://www.bloomberg.com/news/articles/2026-04-22/andreessen-thrive-poised-for-windfall-from-spacex-s-cursor-bid",
+    "https://www.reuters.com/business/finance/",
+    "https://www.cnbc.com/finance/",
+    "https://www.wsj.com/news/business",
+    "https://www.ft.com/companies/financials",
+    "https://finance.yahoo.com/news/",
+    "https://www.marketwatch.com/",
+    "https://www.investing.com/news/",
+    "https://www.barrons.com/",
+    "https://www.economist.com/finance-and-economics",
+    "https://www.bloomberg.com/markets",
+    "https://www.reuters.com/markets/",
+    "https://www.cnbc.com/markets/",
+    "https://www.wsj.com/news/markets",
+    "https://www.ft.com/markets"
   ],
   "Informational:Blog": [
     "https://calnewport.com/blog/", "https://www.themarginalian.org/", "https://waitbutwhy.com/", "https://jamesclear.com/blog",

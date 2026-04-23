@@ -19,8 +19,9 @@
 ## Phase 4: Validation & Tuning
 - [x] Run `pnpm train`.
 - [x] Achieve **>90% overall accuracy** in the Genomic Report. (Result: 91.63%).
-- [x] Perform a "Live Fire" test on un-seen URLs. (Result: 3/4 correct, 1 mislabeled due to extraction limit).
+- [x] Perform a "Live Fire test on un-seen URLs. (Result: 3/4 correct, 1 mislabeled due to extraction limit).
 
 ## Phase 5: Documentation & Article Prep
-- [ ] Update `PROGRESS_REPORT.md`.
-- [ ] Capture "Confusion Matrices" for the planned technical article.
+- [x] **Hybrid Classification Logic:** Implement a "Restricted Category Cross-Check" using Naive Bayes to differentiate News from Financial/Legal portals.
+- [x] Update `PROGRESS_REPORT.md`.
+- [x] Capture "Confusion Matrices" for the planned technical article.
