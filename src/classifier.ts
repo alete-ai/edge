@@ -2,6 +2,7 @@ import Classifier from 'wink-naive-bayes-text-classifier';
 import winkNLP from 'wink-nlp';
 import model from 'wink-eng-lite-web-model';
 import { type SignalMetadata } from './extractor.js';
+import { Model2VecEngine } from './model2vec_engine.js';
 
 // We'll import the weights as a JSON module.
 // Note: This requires "resolveJsonModule": true in tsconfig.
@@ -11,13 +12,15 @@ export class ContentClassifier {
   private nbc: any;
   private nlp: any;
   private its: any;
+  private m2v: Model2VecEngine;
 
   constructor() {
     this.nbc = Classifier();
     this.nlp = winkNLP(model);
     this.its = this.nlp.its;
+    this.m2v = new Model2VecEngine();
 
-    // Load the pre-trained model
+    // Load the pre-trained Naive Bayes model as fallback/legacy
     this.nbc.importJSON(JSON.stringify(weights));
     this.nbc.consolidate();
   }
@@ -79,20 +82,33 @@ export class ContentClassifier {
 
   /**
    * Classifies Markdown or plain text into a genre bucket.
+   * Priority: Model2Vec (Neural) -> Naive Bayes (Statistical Fallback)
    */
-  public classify(text: string, metadata?: SignalMetadata): string {
-    const tokens = this.preprocess(text, metadata);
-    if (tokens.length === 0) return 'Other:General';
-
-    return this.nbc.predict(tokens);
+  public async classify(text: string, metadata?: SignalMetadata): Promise<string> {
+    try {
+      const result = await this.m2v.classify(text);
+      // If we have very low confidence or it's 'Other:General', we could potentially cross-check
+      return result.label;
+    } catch (e) {
+      console.warn('Model2Vec classification failed, falling back to Naive Bayes:', e);
+      const tokens = this.preprocess(text, metadata);
+      if (tokens.length === 0) return 'Other:General';
+      return this.nbc.predict(tokens);
+    }
   }
 
   /**
    * Returns a probability map for all labels.
    */
-  public predictProbabilities(text: string, metadata?: SignalMetadata): Record<string, number> {
-    const tokens = this.preprocess(text, metadata);
-    if (tokens.length === 0) return {};
-    return {}; // Placeholder for detailed probabilities if needed
+  public async predictProbabilities(text: string, metadata?: SignalMetadata): Promise<Record<string, number>> {
+    try {
+      const result = await this.m2v.classify(text);
+      return result.all;
+    } catch (e) {
+      const tokens = this.preprocess(text, metadata);
+      if (tokens.length === 0) return {};
+      // Naive Bayes probabilities not fully implemented in legacy wink adapter
+      return {}; 
+    }
   }
 }

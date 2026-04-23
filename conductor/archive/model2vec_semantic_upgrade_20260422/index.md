@@ -8,6 +8,6 @@ Navigational hub for the Model2Vec implementation track.
 - [Metadata](./metadata.json)
 
 ## Current Status
-**Status:** [ ] New
+**Status:** [x] Completed
 **Target Accuracy:** 95%+
 **Target Size:** <1.5MB

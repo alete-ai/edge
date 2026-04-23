@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { mock, when, instance, anyString } from 'ts-mockito'
+import { mock, when, instance, anything } from 'ts-mockito'
 import { AleteEdge } from './index.js'
-import { Extractor } from './extractor.js'
+import { Extractor, ExtractMode } from './extractor.js'
 import { ContentClassifier } from './classifier.js'
 
 describe('AleteEdge (Unified API)', () => {
@@ -14,8 +14,20 @@ describe('AleteEdge (Unified API)', () => {
     const mockMarkdown = '# Mock content'
     const mockLabel = 'Informational:News'
 
-    when(mockedExtractor.extract(mockHtml)).thenReturn(mockMarkdown)
-    when(mockedClassifier.classify(mockMarkdown)).thenReturn(mockLabel)
+    when(mockedExtractor.extractWithMetadata(anything(), ExtractMode.SIGNAL)).thenReturn({
+      markdown: mockMarkdown,
+      metadata: {
+        buttonCount: 0,
+        linkCount: 0,
+        imageCount: 0,
+        wordCount: 3,
+        linkToWordRatio: 0,
+        paragraphCount: 0,
+        listCount: 0
+      }
+    })
+    when(mockedExtractor.extract(anything(), ExtractMode.SEMANTIC)).thenReturn(mockMarkdown)
+    when(mockedClassifier.classify(anything(), anything())).thenResolve(mockLabel)
 
     // 2. Instantiate with mocked dependencies
     const edge = new AleteEdge({}, {
@@ -29,7 +41,12 @@ describe('AleteEdge (Unified API)', () => {
     // 4. Verify
     expect(result.markdown).toBe(mockMarkdown)
     expect(result.label).toBe(mockLabel)
-    expect(result.metadata?.wordCount).toBe(3)
+    expect(result.timing).toBeDefined()
+    expect(result.timing?.total).toBeGreaterThan(0)
+    expect(result.timing?.classification).toBeDefined()
+    expect(result.timing?.extraction_signal).toBeDefined()
+    expect(result.timing?.extraction_semantic).toBeDefined()
+    expect(result.timing?.redaction).toBeDefined()
   })
 
   it('should redact sensitive information in the process pipeline', async () => {
@@ -40,8 +57,20 @@ describe('AleteEdge (Unified API)', () => {
     const mockMarkdown = 'Email: test@example.com'
     const mockLabel = 'Other:General'
 
-    when(mockedExtractor.extract(mockHtml)).thenReturn(mockMarkdown)
-    when(mockedClassifier.classify(anyString())).thenReturn(mockLabel)
+    when(mockedExtractor.extractWithMetadata(anything(), anything())).thenReturn({
+      markdown: mockMarkdown,
+      metadata: {
+        buttonCount: 0,
+        linkCount: 0,
+        imageCount: 0,
+        wordCount: 3,
+        linkToWordRatio: 0,
+        paragraphCount: 0,
+        listCount: 0
+      }
+    })
+    when(mockedExtractor.extract(anything(), anything())).thenReturn(mockMarkdown)
+    when(mockedClassifier.classify(anything(), anything())).thenResolve(mockLabel)
 
     // No redactor option provided: should default to ON
     const edge = new AleteEdge({}, {
@@ -59,8 +88,9 @@ describe('AleteEdge (Unified API)', () => {
     const mockedExtractor = mock(Extractor)
     const mockedClassifier = mock(ContentClassifier)
 
-    when(mockedExtractor.extract(anyString())).thenReturn(undefined)
-    when(mockedClassifier.classify('')).thenReturn('Other:General')
+    when(mockedExtractor.extractWithMetadata(anything(), anything())).thenReturn(undefined)
+    when(mockedExtractor.extract(anything(), anything())).thenReturn(undefined)
+    when(mockedClassifier.classify(anything(), anything())).thenResolve('Other:General')
 
     const edge = new AleteEdge({}, {
       extractor: instance(mockedExtractor),

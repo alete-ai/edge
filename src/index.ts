@@ -6,12 +6,21 @@ export interface AleteEdgeOptions extends ExtractorOptions {
   redactor?: RedactorOptions | boolean
 }
 
+export interface AleteEdgeTiming {
+  total: number
+  extraction_signal: number
+  classification: number
+  extraction_semantic: number
+  redaction: number
+}
+
 export interface AleteEdgeResult {
   markdown: string
   label: string
   metadata?: SignalMetadata & {
     charCount: number
   }
+  timing?: AleteEdgeTiming
 }
 
 export class AleteEdge {
@@ -38,8 +47,14 @@ export class AleteEdge {
    * 2. SEMANTIC Pass: Clean, article-like extraction for LLM consumption.
    */
   public async process(html: string): Promise<AleteEdgeResult> {
+    const perf = globalThis.performance
+    const t0 = perf.now()
+    
     // Pass 1: Signal Extraction for Classification
+    const ts1 = perf.now()
     const extractionResult = this.extractor.extractWithMetadata(html, ExtractMode.SIGNAL)
+    const te1 = perf.now()
+
     const signalMarkdown = extractionResult?.markdown || ''
     const signalMetadata = extractionResult?.metadata || {
       buttonCount: 0,
@@ -51,14 +66,22 @@ export class AleteEdge {
       listCount: 0
     }
 
-    const label = this.classifier.classify(signalMarkdown, signalMetadata)
+    const tc_start = perf.now()
+    const label = await this.classifier.classify(signalMarkdown, signalMetadata)
+    const tc_end = perf.now()
 
     // Pass 2: Semantic Extraction for high-fidelity output
+    const ts2 = perf.now()
     let markdown = this.extractor.extract(html, ExtractMode.SEMANTIC) || ''
+    const te2 = perf.now()
 
+    const tr_start = perf.now()
     if (this.redactor) {
       markdown = this.redactor.redact(markdown)
     }
+    const tr_end = perf.now()
+
+    const t_total = perf.now()
 
     return {
       markdown,
@@ -67,6 +90,13 @@ export class AleteEdge {
         ...signalMetadata,
         charCount: markdown.length,
       },
+      timing: {
+        total: t_total - t0,
+        extraction_signal: te1 - ts1,
+        classification: tc_end - tc_start,
+        extraction_semantic: te2 - ts2,
+        redaction: tr_end - tr_start,
+      }
     }
   }
 
@@ -84,7 +114,7 @@ export class AleteEdge {
   /**
    * Only classify text without extraction.
    */
-  public classify(text: string): string {
+  public async classify(text: string): Promise<string> {
     return this.classifier.classify(text)
   }
 }

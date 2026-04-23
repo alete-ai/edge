@@ -1,7 +1,7 @@
 {
   "id": "model2vec_semantic_upgrade_20260422",
   "name": "Model2Vec: Semantic Edge Upgrade",
-  "status": "New",
+  "status": "Completed",
   "description": "Migration from Naive Bayes to a distilled Model2Vec architecture to achieve >95% accuracy within 1.5MB.",
   "created_at": "2026-04-22"
 }

@@ -1,96 +1,93 @@
 # AleteEdge: HTML Extraction & Semantic Classification Library
 
-AleteEdge is a standalone TypeScript library designed for fast, on-device content extraction and semantic classification. It transforms raw HTML into clean, semantic Markdown and categorizes it into high-level intent categories.
-
-## Architecture
-
-AleteEdge consists of three primary functional layers:
-
-### 1. DOM Simulation: `linkedom`
-Raw HTML is processed through `linkedom` to provide a lightweight, high-performance DOM simulation environment. This enables safe parsing and traversal of content in environments like Service Workers or Node.js where a native `window` object is unavailable.
-
-### 2. Content Extraction: `Extractor`
-Extraction involves identifying the core content within the HTML. The library parses the DOM tree, removes navigational elements and boilerplate, and identifies semantic structures to produce high-fidelity Markdown.
-
-### 3. Semantic Classification: `ContentClassifier`
-Once extracted, content is classified using ultra-fast Naive Bayes classification (Wink NLP). The library categorizes content into a hierarchical taxonomy (e.g., `Restricted:Financial`, `Educational:Instruction`) in under 50ms.
-
-### 4. Data Sanitization: `Redactor`
-AleteEdge includes a **default-on** sanitization layer to intercept extracted markdown and "scrub" it for sensitive information (PII, credentials, financial data) before ingestion. This ensures privacy and compliance by removing high-risk data at the source.
-
-- **Privacy by Design:** Enabled by default. No sensitive metadata persists in the data storage unless explicitly allowed.
-- **High-Recall Patterns:** Detection of Emails, Phone Numbers, SSNs, Credit Cards, IBANs, API Keys (AWS, OpenAI, etc.), and JWTs.
-- **Informative Placeholders:** Redacted data is replaced with descriptive placeholders (e.g., `[EMAIL_REDACTED]`) to maintain LLM context while ensuring security.
-- **Configurable:** Selectively enable/disable categories, provide custom placeholders, or opt-out entirely.
+AleteEdge is a standalone TypeScript library designed for fast, on-device content extraction and semantic classification. It transforms raw HTML into clean, semantic Markdown and categorizes it into high-level intent categories using a distilled "Neural-First" architecture.
 
 ## Features
 
-- **Edge-First:** Optimized for Service Workers, Chrome Extensions, and edge functions.
-- **Zero-Dependency Core:** Designed for high performance and low bundle size.
-- **Hierarchical Classification:** Refined bucketing for automated content organization.
-- **Privacy-First:** High-performance sanitization layer enabled by default to prevent sensitive data leakage.
-- **AGPL-3.0 Licensed:** Ensuring the open-source integrity of the toolset.
+- **Neural-First:** Migration to **Model2Vec** embeddings for >90% semantic accuracy.
+- **Edge-Optimized:** Zero native dependencies; 100% compatible with Chrome Extensions (MV3), Safari Desktop, and iOS Mobile Extensions.
+- **Multi-Pass Extraction:** Dedicated `SIGNAL` and `SEMANTIC` modes to balance classification accuracy with clean output.
+- **On-Device Privacy:** Default-on PII/Credential redaction layer.
+- **High-Resolution Metrics:** Internal phase-level benchmarking (Extraction, Classification, Redaction).
+- **Lightweight Substrate:** Total runtime footprint <1.5MB.
 
-## Usage
+## Installation
+
+```bash
+pnpm add @alete-ai/edge
+# or
+npm install @alete-ai/edge
+```
+
+## Quick Start
 
 ```typescript
 import { AleteEdge } from '@alete-ai/edge';
 
-// By default, sanitization is enabled for maximum privacy.
 const edge = new AleteEdge();
 
-// To opt-out for maximum performance (not recommended):
-const fastEdge = new AleteEdge({
-  redactor: false
-});
-
-// For custom configurations:
-const customEdge = new AleteEdge({
-  redactor: {
-    redactFinancials: true,
-    redactCredentials: true,
-    customPlaceholders: {
-      EMAIL: '[HIDDEN_CONTACT]'
-    }
-  }
-});
-
 const html = '<html>...</html>';
-const { markdown, label, metadata } = await edge.process(html);
 
-console.log(`Label: ${label}`); // e.g. "Informational:News"
-console.log(`Clean Markdown: ${markdown}`);
+// End-to-end processing (Extraction + Classification + Sanitization)
+const { markdown, label, timing, metadata } = await edge.process(html);
+
+console.log(`Detected Genre: ${label}`);
+console.log(`Total Time: ${timing.total.toFixed(2)}ms`);
+console.log(`Clean Content: ${markdown}`);
 ```
 
-## The Training Pipeline
+## Architecture
 
-To update the classification model:
+### 1. Multi-Pass Extraction (`Extractor`)
+- **SIGNAL Mode:** Preserves UI markers (buttons, links, labels) to provide high-resolution signals for the classifier.
+- **SEMANTIC Mode:** Leverages Mozilla Readability to produce clean, article-like Markdown optimized for LLMs.
 
-1. **Install Python Dependencies:**
+### 2. Neural Classification (`Model2VecEngine`)
+AleteEdge uses a distilled **128-dimensional Model2Vec** model with a 2-layer MLP head.
+- **Zero-Dependency Inference:** Pure-JS implementation of weighted mean pooling and MLP forward pass.
+- **Fallback:** Seamlessly degrades to a lightweight Naive Bayes engine if the neural engine fails.
+
+### 3. Data Sanitization (`Redactor`)
+Intercepts and scrubs PII (Emails, API Keys, Financials) by default.
+```typescript
+const edge = new AleteEdge({
+  redactor: {
+    redactFinancials: true,
+    customPlaceholders: { EMAIL: '[HIDDEN_CONTACT]' }
+  }
+});
+```
+
+## Environment Support
+
+- **Browser/Worker:** 100% support for Chrome, Firefox, and Safari.
+- **Extensions:** Verified on Chrome MV3 Service Workers and Safari iOS Extensions.
+- **Node.js:** Supports v18+ with standard ESM.
+
+## Benchmarking & Performance
+
+The `process()` method returns granular timing data:
+- `extraction_signal`: DOM parsing and marker capture.
+- `classification`: Neural inference time (typically <2ms).
+- `extraction_semantic`: Clean content generation.
+- `redaction`: Sanitization latency.
+
+## Training the Model
+
+To retrain the underlying semantic embeddings or classification head:
+
+1. **Setup Pipeline:**
    ```bash
-   cd training
-   python3 -m venv venv
-   source venv/bin/activate
+   pnpm install
+   cd training && python3 -m venv venv && source venv/bin/activate
    pip install -r requirements.txt
    ```
 
-2. **Fetch Data:**
+2. **Execute Train:**
    ```bash
-   python fetch_dataset.py
-   python generate_synthetic.py
+   pnpm train
    ```
-
-3. **Generate Model Weights:**
-   ```bash
-   node training/train_model.js
-   ```
-
-## Development
-
-```bash
-pnpm install
-pnpm test
-```
+   This unified command runs synthetic data generation, real-world ingestion (from `urls.json`), and weight optimization, outputting a timestamped report in `training/reports/`.
 
 ## License
 

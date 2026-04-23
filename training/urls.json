@@ -50,7 +50,15 @@
     "https://www.webmd.com/", "https://www.nih.gov/", "https://www.who.int/", "https://www.cdc.gov/",
     "https://www.medscape.com/", "https://www.cochrane.org/", "https://www.mayoclinic.org/", "https://www.hopkinsmedicine.org/",
     "https://www.nhs.uk/", "https://www.medicalnewstoday.com/", "https://www.verywellhealth.com/", "https://www.drugs.com/",
-    "https://www.rxlist.com/", "https://www.medicinenet.com/", "https://www.everydayhealth.com/", "https://www.psychologytoday.com/"
+    "https://www.rxlist.com/", "https://www.medicinenet.com/", "https://www.everydayhealth.com/", "https://www.psychologytoday.com/",
+    "https://my.clevelandclinic.org/online-services/mychart", "https://www.myhealth.va.gov/mhv-portal-web/home",
+    "https://www.zocdoc.com/", "https://www.cvs.com/pharmacy", "https://www.walgreens.com/pharmacy/",
+    "https://www.plannedparenthood.org/", "https://www.oscarhealth.com/", "https://www.bluecrossmn.com/login",
+    "https://www.unitedhealthcare.com/", "https://www.humana.com/log-in", "https://www.aetna.com/",
+    "https://www.cigna.com/", "https://www.molinahealthcare.com/", "https://www.healthpartners.com/",
+    "https://www.kp.org/portal/site/member", "https://www.mountsinai.org/care/digital-health/mychart",
+    "https://www.massgeneral.org/patient-care/patient-portals", "https://www.uclahealth.org/patients-families/myuclahealth",
+    "https://www.nyulangone.org/patient-care/mychart", "https://www.pennmedicine.org/for-patients-and-visitors/patient-information/mychart"
   ],
   "Restricted:Financial": [
     "https://www.chase.com/", "https://www.bankofamerica.com/", "https://www.wellsfargo.com/", "https://www.citibank.com/",
@@ -97,7 +105,16 @@
     "https://www.google.com/policies/privacy/", "https://www.apple.com/legal/privacy/en-ww/", "https://twitter.com/en/privacy", "https://www.amazon.com/gp/help/customer/display.html?nodeId=468496",
     "https://www.microsoft.com/en-us/privacystatement/", "https://www.netflix.com/privacy", "https://www.spotify.com/legal/privacy-policy/", "https://www.linkedin.com/legal/privacy-policy",
     "https://www.adobe.com/privacy/policy.html", "https://www.salesforce.com/company/privacy/", "https://www.oracle.com/legal/privacy/", "https://www.ibm.com/privacy/details/us/en/",
-    "https://www.cisco.com/c/en/us/about/legal/privacy-full.html", "https://www.hp.com/us-en/privacy/privacy.html", "https://www.lenovo.com/us/en/privacy/", "https://www.uber.com/legal/privacy/"
+    "https://www.cisco.com/c/en/us/about/legal/privacy-full.html", "https://www.hp.com/us-en/privacy/privacy.html", "https://www.lenovo.com/us/en/privacy/", "https://www.uber.com/legal/privacy/",
+    "https://www.termsfeed.com/blog/sample-terms-and-conditions-template/", "https://www.rocketlawyer.com/sem/terms-of-service.rl",
+    "https://www.legalzoom.com/terms-of-use", "https://www.pacer.gov/", "https://www.supremecourt.gov/",
+    "https://www.justice.gov/", "https://www.ftc.gov/legal-library/browse/statutes", "https://www.sec.gov/rules.shtml",
+    "https://www.eeoc.gov/laws-guidance-0", "https://www.copyright.gov/", "https://www.uspto.gov/",
+    "https://www.findlaw.com/", "https://www.justia.com/", "https://www.law.cornell.edu/",
+    "https://www.docusign.com/en-us/legal/terms-and-conditions", "https://www.hellosign.com/legal/terms",
+    "https://www.pandadoc.com/terms-of-use/", "https://www.clio.com/terms/", "https://www.mycase.com/terms/",
+    "https://www.ironcladapp.com/terms-of-service/", "https://www.contractbook.com/terms-and-conditions",
+    "https://www.lexisnexis.com/en-us/terms/default.page", "https://www.westlaw.com/static/access/termsofuse.html"
   ],
   "Other:General": [
     "https://www.google.com/", "https://www.bing.com/", "https://www.yahoo.com/", "https://www.duckduckgo.com/",

@@ -1,0 +1,87 @@
+{
+  "timestamp": "2026-04-22T20:15:00.000Z",
+  "dataSources": {
+    "x-genre": 3001,
+    "synthetic": 8011,
+    "augmented_web": 1175,
+    "web_ingestion": 496
+  },
+  "totalSamples": 12683,
+  "trainSamples": 11414,
+  "valSamples": 1269,
+  "overallAccuracy": "90.86%",
+  "perLabelAccuracy": {
+    "Restricted:Health": {
+      "total": 10,
+      "correct": 9,
+      "accuracy": "90.00%"
+    },
+    "Restricted:Legal": {
+      "total": 26,
+      "correct": 24,
+      "accuracy": "92.31%"
+    },
+    "Restricted:Financial": {
+      "total": 112,
+      "correct": 112,
+      "accuracy": "100.00%"
+    },
+    "Restricted:PII": {
+      "total": 188,
+      "correct": 188,
+      "accuracy": "100.00%"
+    },
+    "Functional:App": {
+      "total": 187,
+      "correct": 187,
+      "accuracy": "100.00%"
+    },
+    "Informational:Blog": {
+      "total": 158,
+      "correct": 144,
+      "accuracy": "91.14%"
+    },
+    "Informational:News": {
+      "total": 149,
+      "correct": 125,
+      "accuracy": "83.89%"
+    },
+    "Social:Forum": {
+      "total": 93,
+      "correct": 84,
+      "accuracy": "90.32%"
+    },
+    "Educational:Instruction": {
+      "total": 90,
+      "correct": 77,
+      "accuracy": "85.56%"
+    },
+    "Commercial:Promotion": {
+      "total": 70,
+      "correct": 49,
+      "accuracy": "70.00%"
+    },
+    "Informational:Research": {
+      "total": 91,
+      "correct": 72,
+      "accuracy": "79.12%"
+    },
+    "Other:General": {
+      "total": 70,
+      "correct": 62,
+      "accuracy": "88.57%"
+    },
+    "Creative:Prose": {
+      "total": 25,
+      "correct": 20,
+      "accuracy": "80.00%"
+    }
+  },
+  "config": {
+    "architecture": "Model2Vec 128D + MLP Head",
+    "quantization": "int8",
+    "pooling": "Zipf-weighted SIF",
+    "normalization": "L2",
+    "activation": "ReLU"
+  }
+}
