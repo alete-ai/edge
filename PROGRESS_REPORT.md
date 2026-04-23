@@ -90,6 +90,18 @@ This document tracks the strategic evolution, architectural changes, and trainin
     - **Zero-Config:** Verified 100% path parity between local `vitest` and production `dist/` environments.
 - **Survival Metric:** Achieved 96%+ accuracy with a <2MB total AI mass.
 
+### 7. Substrate Distribution Refinement (Metabolic Efficiency) - April 23, 2026
+**Status:** Completed
+- **Initiative:** Purge "metabolic waste" from the npm package to minimize download friction and storage overhead.
+- **Implementation:** 
+    - **Surgical Postbuild**: Updated `package.json` to only copy essential runtime binaries (`m2v_embeddings.bin`, `m2v_quant_meta.json`) to `dist/model`, excluding redundant JSONs already bundled in JS.
+    - **Archival Exclusion**: Explicitly excluded `m2v_embeddings.full.bin` (15.1MB) from the npm distribution.
+- **Results:** 
+    - **Unpacked Size**: Reduced from 43.2 MB to **7.3 MB** (83% reduction).
+    - **Tarball Size**: Reduced from 13.4 MB to **3.5 MB** (74% reduction).
+    - **Asset Integrity**: Verified that zero-config loading still functions perfectly for all core features.
+- **Survival Metric**: Reduced total package mass by ~74% while maintaining 100% functional parity.
+
 - **Library Version 0.1.1: Documentation & Environment Parity - April 22, 2026**
     - **Status:** Completed
     - **Initiative:** Ensure production readiness and external developer clarity.

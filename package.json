@@ -20,7 +20,7 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
-    "postbuild": "cp -r src/model dist/ && du -sh dist/*.js dist/*.cjs dist/model",
+    "postbuild": "mkdir -p dist/model && cp src/model/m2v_embeddings.bin src/model/m2v_quant_meta.json dist/model/ && du -sh dist/*.js dist/*.cjs dist/model",
     "prepublishOnly": "pnpm build",
     "train:data:synthetic": "python3 training/generate_synthetic.py",
     "train:data:web": "pnpm tsx training/ingest_web.ts",

@@ -66,7 +66,7 @@ export class Model2VecEngine {
        if (!fs.existsSync(p)) p = path.resolve(__dirname, fileName);
        return JSON.parse(fs.readFileSync(p, 'utf-8'));
     }
-    const response = await fetch(`/model/${fileName}`);
+    const response = await fetch(this.getAssetUrl(fileName));
     return await response.json();
   }
 
@@ -99,20 +99,28 @@ export class Model2VecEngine {
       return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
     }
 
-    // Browser/Extension context
-    const g = globalThis as any;
-    let url: string;
-    
-    if (g.chrome?.runtime?.getURL) {
-      url = g.chrome.runtime.getURL(`model/${fileName}`);
-    } else if (g.browser?.runtime?.getURL) {
-      url = g.browser.runtime.getURL(`model/${fileName}`);
-    } else {
-      url = `/model/${fileName}`;
-    }
-
-    const response = await fetch(url);
+    const response = await fetch(this.getAssetUrl(fileName));
     return await response.arrayBuffer();
+  }
+
+  private getAssetUrl(fileName: string): string {
+    const g = globalThis as any;
+    
+    // 1. WebExtension Context
+    if (g.chrome?.runtime?.getURL) {
+      return g.chrome.runtime.getURL(`model/${fileName}`);
+    } else if (g.browser?.runtime?.getURL) {
+      return g.browser.runtime.getURL(`model/${fileName}`);
+    }
+    
+    // 2. Modern Browser/Bundler Context (Vite/Webpack/Rollup)
+    try {
+      // Resolve relative to the bundle itself
+      return new URL(`./model/${fileName}`, import.meta.url).href;
+    } catch (e) {
+      // Fallback to domain root
+      return `/model/${fileName}`;
+    }
   }
 
   private relu(x: number): number {

@@ -5,14 +5,11 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   dts: true,
   clean: true,
-  sourcemap: true,
+  sourcemap: false,
   minify: true,
   outDir: 'dist',
   treeshake: true,
   splitting: true,
   target: 'esnext',
-  loader: {
-    '.bin': 'dataurl',
-  },
-  // We remove publicDir because we want to bundle assets for zero-config npm usage
+  // Model assets are externalized to dist/model/ via postbuild
 });
