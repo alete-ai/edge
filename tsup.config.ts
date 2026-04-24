@@ -12,7 +12,7 @@ export default defineConfig([
     treeshake: true,
     splitting: true,
     target: 'esnext',
-    noExternal: ['@huggingface/transformers', '@mozilla/readability', 'dom-to-semantic-markdown'],
+    noExternal: ['@mozilla/readability', 'dom-to-semantic-markdown'],
     external: ['onnxruntime-node', 'fs', 'path', 'url', 'linkedom'],
     platform: 'node',
   },
@@ -29,7 +29,7 @@ export default defineConfig([
     treeshake: true,
     target: 'esnext',
     platform: 'browser',
-    noExternal: ['@huggingface/transformers', '@mozilla/readability', 'dom-to-semantic-markdown', 'wink-nlp', 'wink-eng-lite-web-model', 'wink-naive-bayes-text-classifier'],
+    noExternal: ['@mozilla/readability', 'dom-to-semantic-markdown', 'wink-nlp', 'wink-eng-lite-web-model', 'wink-naive-bayes-text-classifier'],
     external: ['linkedom', 'fs', 'path', 'url', 'onnxruntime-node'],
     // We shim linkedom and other node stuff to empty or native equivalents
     define: {
@@ -42,7 +42,6 @@ export default defineConfig([
         'fs': 'src/platform/empty-shim.ts',
         'path': 'src/platform/empty-shim.ts',
         'url': 'src/platform/empty-shim.ts',
-        'onnxruntime-node': 'onnxruntime-web'
       }
     }
   }

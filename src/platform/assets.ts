@@ -50,10 +50,12 @@ export async function getAssetProvider(): Promise<AssetProvider> {
     return {
       loadJson: async (url: string) => {
         const response = await fetch(url);
+        if (!response.ok) throw new Error(`Failed to load JSON from ${url}: ${response.statusText}`);
         return await response.json();
       },
       loadBinary: async (url: string) => {
         const response = await fetch(url);
+        if (!response.ok) throw new Error(`Failed to load binary from ${url}: ${response.statusText}`);
         return await response.arrayBuffer();
       },
       resolveUrl: (fileName: string, modelPath?: string | null) => {
@@ -62,15 +64,25 @@ export async function getAssetProvider(): Promise<AssetProvider> {
         }
 
         const g = globalThis as any;
-        if (g.chrome?.runtime?.getURL) {
-          return g.chrome.runtime.getURL(`${modelPath || 'model'}/${fileName}`);
+        const runtime = g.browser?.runtime || g.chrome?.runtime;
+
+        // Safari iOS blocks fetch() for absolute safari-extension:// URLs with 'TypeError: Load failed'.
+        // Detect Safari extensions by peeking at the URL scheme they produce, and fall through to
+        // the relative-path fallback so fetch() receives a plain relative string that Safari accepts.
+        const isSafariExtension = typeof runtime?.getURL === 'function' &&
+          runtime.getURL('').startsWith('safari');
+
+        if (!isSafariExtension && runtime?.getURL) {
+          return runtime.getURL(`${modelPath || 'model'}/${fileName}`);
         }
-        
+
         try {
           if (modelPath) return new URL(fileName, modelPath).href;
           return new URL(`./model/${fileName}`, import.meta.url).href;
         } catch (e) {
-          const base = modelPath || '/model';
+          // For Safari: modelPath is a plain dir name like "model", new URL() throws on it,
+          // so we return a relative path string that fetch() resolves from the extension root.
+          const base = modelPath || 'model';
           return base.endsWith('/') ? `${base}${fileName}` : `${base}/${fileName}`;
         }
       }

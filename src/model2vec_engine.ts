@@ -1,4 +1,4 @@
-import { BertTokenizer } from '@huggingface/transformers'
+import { makeBertTokenizer, type BertTokenizerFn } from './platform/tokenizer.js'
 import { getAssetProvider, type AssetProvider } from './platform/assets.js'
 
 // Import assets directly. tsup/esbuild will bundle them.
@@ -19,7 +19,7 @@ export interface M2VModelConfig {
 }
 
 export class Model2VecEngine {
-  private tokenizer: any = null
+  private tokenizer: BertTokenizerFn | null = null
   private embeddings: Float32Array | null = null
   private config: M2VModelConfig | null = null
   private assetProvider: AssetProvider | null = null
@@ -40,7 +40,7 @@ export class Model2VecEngine {
     this.config = m2vHead as unknown as M2VModelConfig
 
     // 2. Load Tokenizer
-    this.tokenizer = new BertTokenizer(tokenizerJson, {})
+    this.tokenizer = makeBertTokenizer(tokenizerJson as any)
 
     // 3. Load Embeddings (Always Int4 for optimized footprint)
     const embeddingUrl = this.assetProvider.resolveUrl('m2v_embeddings.bin', this.modelPath);
@@ -80,7 +80,7 @@ export class Model2VecEngine {
 
     // 1. Tokenize
     const { input_ids } = await this.tokenizer(text)
-    const ids = input_ids.data || input_ids
+    const ids = input_ids
 
     // 2. Embedding Lookup & Weighted Mean Pooling (SIF-like)
     const dim = this.config.embedding_dim
