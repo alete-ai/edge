@@ -112,17 +112,30 @@ This document tracks the strategic evolution, architectural changes, and trainin
         - Performed code cleanup in `src/` to remove diagnostic overhead and ensure high-signal production output.
     - **Size Efficiency:** 1.4MB Runtime bundle. Embeddings (14MB raw) compress significantly for distribution.
 
+### 8. Browser-Native Substrate Refactor (The Universal Link) - April 23, 2026
+**Status:** Completed
+- **Initiative:** Eliminate "architectural entropy" and enable a "one-click" browser installation experience by removing all hard Node.js dependencies.
+- **Implementation:** 
+    - **DOM Agnosticism**: Implemented `src/platform/dom.ts` to bridge between `linkedom` (Node) and native `DOMParser` (Browser).
+    - **Resilient Asset Loading**: Created `src/platform/assets.ts` to unify binary/JSON loading via `fs` (Node) and `fetch` (Browser) with robust path resolution.
+    - **Async Pipeline Upgrade**: Refactored `Extractor.ts` and `AleteEdge.ts` to support asynchronous initialization and processing, accommodating dynamic platform-specific imports.
+    - **Dual-Target Build Strategy**: Configured `tsup.config.ts` to generate both a standard Node bundle and a dedicated `index.browser.js` that shims Node built-ins and aliases `onnxruntime-node` to `onnxruntime-web`.
+- **Results:** 
+    - **Zero-Config Browser Support**: Verified native execution in a standard browser tab with no Node polyfills or bundler aliases.
+    - **Redundancy Purge**: Successfully dropped the metabolic cost of `linkedom` in browser environments by leveraging native APIs.
+    - **Test Parity**: Maintained 100% test passing rate across the new async architecture in Node.js.
+- **Survival Metric**: Achieved "one-click" browser initialization with a clean console (zero Node-related warnings).
+
 ---
 
 ## Architectural Evolution
 
-### Multi-Pass Pipeline Architecture
-The system evolved from a linear extraction to a contextual pipeline:
-1.  **SIGNAL Pass:** High-recall, structural capture + `SignalMetadata` extraction.
-2.  **CLASSIFY:** Label assignment using **Model2Vec Semantic Engine** with MLP head (Fallback to Naive Bayes).
-3.  **SEMANTIC Pass:** High-precision, cleaned Markdown delivery.
+### Platform-Agnostic Core
+The substrate has been split into abstraction layers:
+1. **DOM Bridge**: Injects the appropriate parser based on environment (`linkedom` vs `DOMParser`).
+2. **Asset Bridge**: Dynamically resolves and loads model weights using the most efficient local or network path.
+3. **Inference Bridge**: Aliases heavy Node runtimes to browser-optimized equivalents during bundling.
 
----
 
 ## Current Survival Metrics (Last Audit: 2026-04-22)
 - **Overall Validation Accuracy:** 90.86%

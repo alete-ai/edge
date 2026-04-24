@@ -5,7 +5,7 @@ import { Extractor, ExtractMode } from './extractor.js';
 describe('Extractor Structural Metadata', () => {
   const extractor = new Extractor();
 
-  it('should extract metadata from HTML', () => {
+  it('should extract metadata from HTML', async () => {
     const html = `
       <html>
         <body>
@@ -22,7 +22,7 @@ describe('Extractor Structural Metadata', () => {
         </body>
       </html>
     `;
-    const result = extractor.extractWithMetadata(html, ExtractMode.STRUCTURAL);
+    const result = await extractor.extractWithMetadata(html, ExtractMode.STRUCTURAL);
     expect(result).toBeDefined();
     if (result) {
       expect(result.metadata.paragraphCount).toBe(2);
@@ -34,7 +34,7 @@ describe('Extractor Structural Metadata', () => {
     }
   });
 
-  it('should calculate linkToWordRatio correctly', () => {
+  it('should calculate linkToWordRatio correctly', async () => {
     const html = `
       <html>
         <body>
@@ -43,7 +43,7 @@ describe('Extractor Structural Metadata', () => {
         </body>
       </html>
     `;
-    const result = extractor.extractWithMetadata(html);
+    const result = await extractor.extractWithMetadata(html);
     expect(result).toBeDefined();
     if (result) {
       // 6 words approx, 1 link

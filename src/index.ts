@@ -53,7 +53,7 @@ export class AleteEdge {
     
     // Pass 1: Structural Extraction for Categorization
     const ts1 = perf.now()
-    const extractionResult = this.extractor.extractWithMetadata(html, ExtractMode.STRUCTURAL)
+    const extractionResult = await this.extractor.extractWithMetadata(html, ExtractMode.STRUCTURAL)
     const te1 = perf.now()
 
     const structuralMarkdown = extractionResult?.markdown || ''
@@ -73,7 +73,7 @@ export class AleteEdge {
 
     // Pass 2: Semantic Extraction for high-fidelity output
     const ts2 = perf.now()
-    let markdown = this.extractor.extract(html, ExtractMode.SEMANTIC) || ''
+    let markdown = await this.extractor.extract(html, ExtractMode.SEMANTIC) || ''
     const te2 = perf.now()
 
     const tr_start = perf.now()
@@ -104,8 +104,8 @@ export class AleteEdge {
   /**
    * Only extract markdown without categorization. Defaults to SEMANTIC mode.
    */
-  public extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): string | undefined {
-    let markdown = this.extractor.extract(html, mode)
+  public async extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): Promise<string | undefined> {
+    let markdown = await this.extractor.extract(html, mode)
     if (markdown && this.redactor) {
       markdown = this.redactor.redact(markdown)
     }

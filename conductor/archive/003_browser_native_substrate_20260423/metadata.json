@@ -1,0 +1,6 @@
+{
+  "id": "003-browser-native-substrate",
+  "name": "Browser-Native Substrate Refactor",
+  "status": "Completed",
+  "description": "Refactor the Alete-Edge library to remove Node.js dependencies, optimize for browser native DOM APIs, and enable a one-click installation experience."
+}

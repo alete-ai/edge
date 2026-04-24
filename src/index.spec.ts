@@ -14,7 +14,7 @@ describe('AleteEdge (Unified API)', () => {
     const mockMarkdown = '# Mock content'
     const mockLabel = 'Informational:News'
 
-    when(mockedExtractor.extractWithMetadata(anything(), ExtractMode.STRUCTURAL)).thenReturn({
+    when(mockedExtractor.extractWithMetadata(anything(), ExtractMode.STRUCTURAL)).thenResolve({
       markdown: mockMarkdown,
       metadata: {
         buttonCount: 0,
@@ -26,7 +26,7 @@ describe('AleteEdge (Unified API)', () => {
         listCount: 0
       }
     })
-    when(mockedExtractor.extract(anything(), ExtractMode.SEMANTIC)).thenReturn(mockMarkdown)
+    when(mockedExtractor.extract(anything(), ExtractMode.SEMANTIC)).thenResolve(mockMarkdown)
     when(mockedClassifier.classify(anything(), anything())).thenResolve(mockLabel)
 
     // 2. Instantiate with mocked dependencies
@@ -57,7 +57,7 @@ describe('AleteEdge (Unified API)', () => {
     const mockMarkdown = 'Email: test@example.com'
     const mockLabel = 'Other:General'
 
-    when(mockedExtractor.extractWithMetadata(anything(), anything())).thenReturn({
+    when(mockedExtractor.extractWithMetadata(anything(), anything())).thenResolve({
       markdown: mockMarkdown,
       metadata: {
         buttonCount: 0,
@@ -69,7 +69,7 @@ describe('AleteEdge (Unified API)', () => {
         listCount: 0
       }
     })
-    when(mockedExtractor.extract(anything(), anything())).thenReturn(mockMarkdown)
+    when(mockedExtractor.extract(anything(), anything())).thenResolve(mockMarkdown)
     when(mockedClassifier.classify(anything(), anything())).thenResolve(mockLabel)
 
     // No redactor option provided: should default to ON
@@ -88,8 +88,8 @@ describe('AleteEdge (Unified API)', () => {
     const mockedExtractor = mock(Extractor)
     const mockedClassifier = mock(ContentClassifier)
 
-    when(mockedExtractor.extractWithMetadata(anything(), anything())).thenReturn(undefined)
-    when(mockedExtractor.extract(anything(), anything())).thenReturn(undefined)
+    when(mockedExtractor.extractWithMetadata(anything(), anything())).thenResolve(undefined)
+    when(mockedExtractor.extract(anything(), anything())).thenResolve(undefined)
     when(mockedClassifier.classify(anything(), anything())).thenResolve('Other:General')
 
     const edge = new AleteEdge({}, {

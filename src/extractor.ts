@@ -3,7 +3,7 @@ import {
   convertHtmlToMarkdown as convert,
   type SemanticMarkdownAST,
 } from 'dom-to-semantic-markdown'
-import { parseHTML } from 'linkedom'
+import { getDOMProvider, type DOMProvider } from './platform/dom.js'
 
 export const ExtractMode = {
   /** Preserves UI markers (buttons, forms, nav) for categorization. */
@@ -29,22 +29,30 @@ export interface StructuralMetadata {
 
 export class Extractor {
   private defaultIgnoredTags: Set<string>
+  private domProvider: DOMProvider | null = null
+  private ready: Promise<void>
 
   constructor(options: ExtractorOptions = {}) {
     // These are always junk
     this.defaultIgnoredTags = new Set(options.ignoredTags || [
       'script', 'style', 'iframe', 'noscript', 'svg'
     ])
+    this.ready = this.init()
+  }
+
+  private async init() {
+    this.domProvider = await getDOMProvider()
   }
 
   /**
    * Extracts content and structural metadata from HTML.
    */
-  public extractWithMetadata(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): { markdown: string, metadata: StructuralMetadata } | undefined {
+  public async extractWithMetadata(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): Promise<{ markdown: string, metadata: StructuralMetadata } | undefined> {
+    await this.ready
     try {
-      const { document } = parseHTML(html)
+      const { document } = this.domProvider!.parseHTML(html)
       const metadata = this.calculateStructuralMetadata(document)
-      const markdown = this.extract(html, mode) || ''
+      const markdown = await this.extract(html, mode) || ''
       
       return { markdown, metadata }
     } catch (error) {
@@ -56,9 +64,10 @@ export class Extractor {
   /**
    * Extracts content from HTML based on the requested mode.
    */
-  public extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): string | undefined {
+  public async extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): Promise<string | undefined> {
+    await this.ready
     try {
-      const { document } = parseHTML(html)
+      const { document } = this.domProvider!.parseHTML(html)
 
       // Determine which tags to strip based on mode
       const ignoredTags = new Set(this.defaultIgnoredTags)
@@ -89,8 +98,7 @@ export class Extractor {
         finalHtml = `<html><body>${finalHtml}</body></html>`
       }
       
-      const { document: convertDoc } = parseHTML(finalHtml)
-      const customParser = new (convertDoc.defaultView?.DOMParser || (globalThis as any).DOMParser)()
+      const customParser = this.domProvider!.createParser()
 
       const markdown = convert(finalHtml, {
         extractMainContent: false, // Managed by Readability or our mode logic

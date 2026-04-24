@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alete Edge One-Click Test</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        pre { background: #eee; padding: 10px; overflow-x: auto; border-radius: 4px; }
+        .status { font-weight: bold; color: #007bff; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Alete Edge Browser Test</h1>
+        <p>Status: <span id="status" class="status">Initializing...</span></p>
+        
+        <h3>Input HTML:</h3>
+        <pre id="input-html">&lt;html&gt;&lt;body&gt;&lt;article&gt;&lt;h1&gt;Breaking News&lt;/h1&gt;&lt;p&gt;The markets are rallying today due to new tech breakthroughs.&lt;/p&gt;&lt;button&gt;Click here&lt;/button&gt;&lt;/article&gt;&lt;/body&gt;&lt;/html&gt;</pre>
+        
+        <h3>Result:</h3>
+        <pre id="output">...</pre>
+
+        <h3>Timing:</h3>
+        <pre id="timing">...</pre>
+    </div>
+
+    <script type="module">
+        import { AleteEdge } from '../dist/index.browser.js';
+
+        async function runTest() {
+            const statusEl = document.getElementById('status');
+            const outputEl = document.getElementById('output');
+            const timingEl = document.getElementById('timing');
+
+            try {
+                // Initialize with explicit path to models in dist
+                const edge = new AleteEdge({ modelPath: '../dist/model/' });
+                
+                statusEl.innerText = 'Processing...';
+                const html = document.getElementById('input-html').innerText;
+                
+                const result = await edge.process(html);
+                
+                statusEl.innerText = 'Success!';
+                statusEl.className = 'status success';
+                
+                outputEl.innerText = JSON.stringify({
+                    label: result.label,
+                    markdown: result.markdown,
+                    metadata: result.metadata
+                }, null, 2);
+
+                timingEl.innerText = JSON.stringify(result.timing, null, 2);
+            } catch (err) {
+                console.error(err);
+                statusEl.innerText = 'Failed: ' + err.message;
+                statusEl.className = 'status error';
+            }
+        }
+
+        runTest();
+    </script>
+</body>
+</html>

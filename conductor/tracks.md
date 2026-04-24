@@ -9,6 +9,7 @@
 
 | ID | Track Name | Status | Link |
 |----|------------|--------|------|
+| 003-browser-native-substrate | Browser-Native Substrate Refactor | [x] Completed | [Plan](./archive/003_browser_native_substrate_20260423/plan.md) |
 | neural_substrate_optimization_20260423 | Neural Substrate Optimization | [x] Completed | [Plan](./archive/neural_substrate_optimization_20260423/plan.md) |
 | classifier_optimization_v3_95_percent_20260422 | Classifier Precision Optimization (>95%) | [x] Completed | [Plan](./archive/classifier_optimization_v3_95_percent_20260422/plan.md) |
 | model2vec_semantic_upgrade_20260422 | Model2Vec: Semantic Edge Upgrade | [x] Completed | [Plan](./archive/model2vec_semantic_upgrade_20260422/plan.md) |

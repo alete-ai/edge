@@ -1,10 +1,9 @@
 import { BertTokenizer } from '@huggingface/transformers'
+import { getAssetProvider, type AssetProvider } from './platform/assets.js'
 
 // Import assets directly. tsup/esbuild will bundle them.
-// JSONs are bundled as objects, .bin is bundled as a data URL (base64) via tsup config.
 import m2vHead from './model/m2v_head.json' with { type: 'json' }
 import tokenizerJson from './model/tokenizer.json' with { type: 'json' }
-// import m2vEmbeddingsData from './model/m2v_embeddings.bin' <-- Removed to allow dynamic swap
 
 export interface M2VModelConfig {
   classes: string[]
@@ -23,15 +22,19 @@ export class Model2VecEngine {
   private tokenizer: any = null
   private embeddings: Float32Array | null = null
   private config: M2VModelConfig | null = null
+  private assetProvider: AssetProvider | null = null
 
   private modelPath: string | null = null
+  private ready: Promise<void>
 
   constructor(modelPath?: string) {
     this.modelPath = modelPath || null;
+    this.ready = this.init();
   }
 
   async init() {
     if (this.tokenizer) return
+    this.assetProvider = await getAssetProvider();
 
     // 1. Load Config/Head
     this.config = m2vHead as unknown as M2VModelConfig
@@ -40,8 +43,11 @@ export class Model2VecEngine {
     this.tokenizer = new BertTokenizer(tokenizerJson, {})
 
     // 3. Load Embeddings (Always Int4 for optimized footprint)
-    const arrayBuffer = await this.loadBinaryAsset('m2v_embeddings.bin');
-    const metaData = await this.loadJsonAsset('m2v_quant_meta.json');
+    const embeddingUrl = this.assetProvider.resolveUrl('m2v_embeddings.bin', this.modelPath);
+    const metaUrl = this.assetProvider.resolveUrl('m2v_quant_meta.json', this.modelPath);
+    
+    const arrayBuffer = await this.assetProvider.loadBinary(embeddingUrl);
+    const metaData = await this.assetProvider.loadJson(metaUrl);
     
     const i4Packed = new Uint8Array(arrayBuffer);
     this.embeddings = new Float32Array(metaData.count);
@@ -57,95 +63,6 @@ export class Model2VecEngine {
     }
   }
 
-  private async loadJsonAsset(fileName: string): Promise<any> {
-    const isNode = typeof process !== 'undefined' && process.versions?.node;
-    if (isNode && !this.modelPath?.startsWith('http')) {
-       const fs = await import('fs');
-       const path = await import('path');
-       const { fileURLToPath } = await import('url');
-       
-       let p: string;
-       if (this.modelPath) {
-         p = path.resolve(this.modelPath, fileName);
-       } else {
-         const __dirname = path.dirname(fileURLToPath(import.meta.url));
-         p = path.resolve(__dirname, 'model', fileName);
-         if (!fs.existsSync(p)) p = path.resolve(__dirname, fileName);
-       }
-       
-       return JSON.parse(fs.readFileSync(p, 'utf-8'));
-    }
-    const response = await fetch(this.getAssetUrl(fileName));
-    return await response.json();
-  }
-
-  private async loadBinaryAsset(fileName: string): Promise<ArrayBuffer> {
-    const isNode = typeof process !== 'undefined' && process.versions?.node;
-    
-    if (isNode && !this.modelPath?.startsWith('http')) {
-      const fs = await import('fs');
-      const path = await import('path');
-      const { fileURLToPath } = await import('url');
-      
-      let fullPath: string;
-      if (this.modelPath) {
-        fullPath = path.resolve(this.modelPath, fileName);
-      } else {
-        try {
-          const __dirname = path.dirname(fileURLToPath(import.meta.url));
-          fullPath = path.resolve(__dirname, 'model', fileName);
-          
-          // Handle dist context
-          if (!fs.existsSync(fullPath)) {
-             fullPath = path.resolve(__dirname, fileName);
-          }
-        } catch (e) {
-          fullPath = path.resolve(process.cwd(), 'src/model', fileName);
-        }
-      }
-      
-      if (!fs.existsSync(fullPath)) {
-        throw new Error(`Binary asset ${fileName} not found at ${fullPath}`);
-      }
-
-      const buffer = fs.readFileSync(fullPath);
-      return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
-    }
-
-    const response = await fetch(this.getAssetUrl(fileName));
-    return await response.arrayBuffer();
-  }
-
-  private getAssetUrl(fileName: string): string {
-    if (this.modelPath && this.modelPath.startsWith('http')) {
-      return this.modelPath.endsWith('/') ? `${this.modelPath}${fileName}` : `${this.modelPath}/${fileName}`;
-    }
-
-    const g = globalThis as any;
-    
-    // 1. WebExtension Context
-    if (g.chrome?.runtime?.getURL) {
-      const base = this.modelPath || 'model';
-      return g.chrome.runtime.getURL(`${base}/${fileName}`);
-    } else if (g.browser?.runtime?.getURL) {
-      const base = this.modelPath || 'model';
-      return g.browser.runtime.getURL(`${base}/${fileName}`);
-    }
-    
-    // 2. Modern Browser/Bundler Context (Vite/Webpack/Rollup)
-    try {
-      if (this.modelPath) {
-        return new URL(fileName, this.modelPath).href;
-      }
-      // Resolve relative to the bundle itself
-      return new URL(`./model/${fileName}`, import.meta.url).href;
-    } catch (e) {
-      // Fallback to domain root
-      const base = this.modelPath || '/model';
-      return base.endsWith('/') ? `${base}${fileName}` : `${base}/${fileName}`;
-    }
-  }
-
   private relu(x: number): number {
     return Math.max(0, x)
   }
@@ -158,7 +75,7 @@ export class Model2VecEngine {
   }
 
   async classify(text: string): Promise<{ label: string; score: number; all: Record<string, number> }> {
-    await this.init()
+    await this.ready
     if (!this.tokenizer || !this.embeddings || !this.config) throw new Error('Model not initialized')
 
     // 1. Tokenize
