@@ -1,0 +1,44 @@
+{
+  "name": "@alete-ai/edge",
+  "version": "0.2.0",
+  "description": "Content Extraction & Semantic Classification Library",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsup",
+    "postbuild": "mkdir -p dist/model && cp src/model/m2v_embeddings.bin src/model/m2v_quant_meta.json dist/model/ && du -sh dist/*.js dist/*.cjs dist/model"
+  },
+  "keywords": [
+    "edge",
+    "nlp",
+    "extraction",
+    "readability",
+    "markdown"
+  ],
+  "author": "Stoyan Dimitrov <https://github.com/StoyanD>",
+  "license": "AGPL-3.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@alete-ai/edge-core": "workspace:*",
+    "wink-eng-lite-web-model": "^1.8.1",
+    "wink-naive-bayes-text-classifier": "^2.2.1",
+    "wink-nlp": "^2.4.0"
+  }
+}

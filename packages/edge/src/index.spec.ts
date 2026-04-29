@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mock, when, instance, anything } from 'ts-mockito'
 import { AleteEdge } from './index.js'
-import { Extractor, ExtractMode } from './extractor.js'
+import { Extractor, ExtractMode } from '@alete-ai/edge-core'
 import { ContentClassifier } from './classifier.js'
 
 describe('AleteEdge (Unified API)', () => {

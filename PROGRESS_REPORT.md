@@ -126,6 +126,20 @@ This document tracks the strategic evolution, architectural changes, and trainin
     - **Test Parity**: Maintained 100% test passing rate across the new async architecture in Node.js.
 - **Survival Metric**: Achieved "one-click" browser initialization with a clean console (zero Node-related warnings).
 
+### 9. npm Package Split (Core vs. Full) - April 29, 2026
+**Status:** Completed
+- **Initiative:** "Substrate Decoupling" - Separating HTML extraction from the ML-heavy classification engine to support platform-native adaptations (iOS/Mac).
+- **Implementation:** 
+    - **Monorepo Migration:** Transitioned to a `pnpm` workspace architecture.
+    - **@alete-ai/edge-core:** Created a lightweight package containing the `Extractor`, `Redactor`, and core `platform` utilities.
+    - **@alete-ai/edge:** Refactored the full orchestrator to depend on `edge-core`, maintaining all AI inference and categorization features.
+    - **Structural Preparation:** Relocated shared interfaces and `ExtractMode` to a dedicated `types.ts` to ensure clean dependency boundaries.
+    - **Validation:** Implemented "Substrate Independence" tests to verify that `edge-core` can run without any classifier or weights dependency.
+- **Results:** 
+    - **Lightweight Core:** `@alete-ai/edge-core` provides a minimal "Structural Signal" (Metadata + Markdown) suitable for ingestion by non-JS classifiers (Swift/Go).
+    - **Zero Breaking Changes:** Maintained full backwards compatibility for users of the `@alete-ai/edge` package.
+- **Survival Metric:** Verified that `@alete-ai/edge-core` build is <1MB and runs successfully without any `wink-nlp` or `Model2Vec` dependencies.
+
 ---
 
 ## Architectural Evolution

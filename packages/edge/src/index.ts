@@ -1,28 +1,6 @@
-import { Extractor, ExtractMode, type ExtractorOptions, type StructuralMetadata } from './extractor.js'
+import { Extractor, Redactor } from '@alete-ai/edge-core'
+import { ExtractMode, type AleteEdgeOptions, type AleteEdgeResult, type AleteEdgeTiming } from '@alete-ai/edge-core/types'
 import { ContentClassifier } from './classifier.js'
-import { Redactor, type RedactorOptions } from './sanitization/Redactor.js'
-
-export interface AleteEdgeOptions extends ExtractorOptions {
-  redactor?: RedactorOptions | boolean
-  modelPath?: string
-}
-
-export interface AleteEdgeTiming {
-  total: number
-  extraction_structural: number
-  categorization: number
-  extraction_semantic: number
-  redaction: number
-}
-
-export interface AleteEdgeResult {
-  markdown: string
-  label: string
-  metadata?: StructuralMetadata & {
-    charCount: number
-  }
-  timing?: AleteEdgeTiming
-}
 
 export class AleteEdge {
   private extractor: Extractor

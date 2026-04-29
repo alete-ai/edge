@@ -1,7 +1,7 @@
 import Classifier from 'wink-naive-bayes-text-classifier';
 import winkNLP from 'wink-nlp';
 import model from 'wink-eng-lite-web-model';
-import { type StructuralMetadata } from './extractor.js';
+import { type StructuralMetadata } from '@alete-ai/edge-core/types';
 import { Model2VecEngine } from './model2vec_engine.js';
 
 // We'll import the weights as a JSON module.

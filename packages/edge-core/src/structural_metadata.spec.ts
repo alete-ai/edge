@@ -1,6 +1,7 @@
 /** @vitest-environment node */
 import { describe, it, expect } from 'vitest';
-import { Extractor, ExtractMode } from './extractor.js';
+import { Extractor } from './extractor.js';
+import { ExtractMode } from './types.js';
 
 describe('Extractor Structural Metadata', () => {
   const extractor = new Extractor();
