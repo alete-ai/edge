@@ -4,28 +4,7 @@ import {
   type SemanticMarkdownAST,
 } from 'dom-to-semantic-markdown'
 import { getDOMProvider, type DOMProvider } from './platform/dom.js'
-
-export const ExtractMode = {
-  /** Preserves UI markers (buttons, forms, nav) for categorization. */
-  STRUCTURAL: 'STRUCTURAL',
-  /** Clean, high-fidelity Markdown optimized for LLM consumption. */
-  SEMANTIC: 'SEMANTIC',
-} as const
-export type ExtractMode = (typeof ExtractMode)[keyof typeof ExtractMode]
-
-export interface ExtractorOptions {
-  ignoredTags?: string[]
-}
-
-export interface StructuralMetadata {
-  buttonCount: number
-  linkCount: number
-  imageCount: number
-  wordCount: number
-  linkToWordRatio: number
-  paragraphCount: number
-  listCount: number
-}
+import { ExtractMode, type ExtractorOptions, type StructuralMetadata } from './types.js'
 
 export class Extractor {
   private defaultIgnoredTags: Set<string>
