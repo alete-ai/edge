@@ -4,6 +4,7 @@
 
 | ID | Track Name | Status | Link |
 |----|------------|--------|------|
+| 004_ios_native_classifier | iOS Native Classifier Implementation | [ ] Planning | [Index](./tracks/004_ios_native_classifier/index.md) |
 
 ## Archive
 
