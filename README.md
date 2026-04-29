@@ -72,6 +72,7 @@ The library handles all asset resolution internally using a specialized substrat
 - **Node.js:** Automatically resolves and reads model assets from the filesystem using `fs`.
 - **Browsers:** Fetches optimized assets on-demand from your server or CDN.
 - **Extensions:** Verified for Chrome MV3 (Service Workers) and Safari/iOS Extensions using native platform resolution (`chrome.runtime.getURL`).
+- **Native (iOS/macOS):** High-performance Swift implementation with SIMD acceleration (see [ios/AleteClassifier](ios/AleteClassifier/README.md)).
 
 ### Performance & Footprint
 
