@@ -12,11 +12,20 @@ AleteEdge is a standalone TypeScript library designed for fast, on-device conten
 
 ## Installation
 
+This repository is organized as a monorepo containing two packages:
+
+- **[@alete-ai/edge](./packages/edge):** The full suite (Extraction + AI Classification).
+- **[@alete-ai/edge-core](./packages/edge-core):** The lightweight core (Extraction + Sanitization).
+
 ```bash
+# For the full AI-powered suite
 pnpm add @alete-ai/edge
+
+# For just the lightweight extraction core
+pnpm add @alete-ai/edge-core
 ```
 
-## Quick Start
+## Quick Start (Full Package)
 
 AleteEdge is designed to "just work." It automatically resolves its internal assets across Node.js, Browsers, and WebExtensions.
 

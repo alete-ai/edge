@@ -1,12 +1,5 @@
 import { DeepRedact } from '@hackylabs/deep-redact';
-
-export interface RedactorOptions {
-  redactPii?: boolean;
-  redactFinancials?: boolean;
-  redactCredentials?: boolean;
-  redactInfrastructure?: boolean;
-  customPlaceholders?: Record<string, string>;
-}
+import { type RedactorOptions } from '../types.js';
 
 export class Redactor {
   private redactor: DeepRedact;

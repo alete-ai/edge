@@ -1,5 +1,5 @@
-import { makeBertTokenizer, type BertTokenizerFn } from './platform/tokenizer.js'
-import { getAssetProvider, type AssetProvider } from './platform/assets.js'
+import { makeBertTokenizer, type BertTokenizerFn } from '@alete-ai/edge-core/platform/tokenizer'
+import { getAssetProvider, type AssetProvider } from '@alete-ai/edge-core/platform/assets'
 
 // Import assets directly. tsup/esbuild will bundle them.
 import m2vHead from './model/m2v_head.json' with { type: 'json' }
