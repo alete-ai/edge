@@ -39,4 +39,4 @@ coverage/
 *.tgz
 
 # Dev
-worktree/
+.worktrees/
