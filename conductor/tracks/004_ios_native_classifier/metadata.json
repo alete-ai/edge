@@ -1,0 +1,12 @@
+{
+  "id": "004_ios_native_classifier",
+  "name": "iOS Native Classifier Implementation",
+  "status": "active",
+  "description": "Native Swift implementation of the Model2Vec classifier using Apple's Accelerate framework for high-performance, low-power inference on iOS and macOS.",
+  "metadata": {
+    "tier": "Core Substrate",
+    "platform": "iOS/macOS",
+    "tech_stack": ["Swift", "Accelerate", "vDSP", "SPM"],
+    "priority": "High"
+  }
+}

@@ -126,6 +126,18 @@ This document tracks the strategic evolution, architectural changes, and trainin
     - **Test Parity**: Maintained 100% test passing rate across the new async architecture in Node.js.
 - **Survival Metric**: Achieved "one-click" browser initialization with a clean console (zero Node-related warnings).
 
+### 9. iOS Native Classifier Implementation (The Neural Substrate Port) - April 29, 2026
+**Status:** In-Progress (Planning)
+- **Initiative:** "Hardware Ascension" - Porting the Model2Vec classification engine to native Swift to leverage Apple's Accelerate framework and maximize power efficiency on mobile.
+- **Implementation Strategy:**
+    - **Technical Substrate:** Utilizing **Accelerate (vDSP)** for embedding lookups, weighted pooling, and MLP head inference.
+    - **Parity Protocol:** Implementing a custom Swift tokenizer matching `BertTokenizer.ts` exactly to ensure zero-drift inference across platforms.
+    - **Metabolic Optimization:** Memory-mapping Int4 quantized embeddings for near-instant cold start and minimal RAM footprint.
+- **Goals:** 
+    - Sub-5ms inference latency on physical iOS hardware.
+    - 100% parity with the JS implementation (same `input_ids` and probabilities).
+    - Standalone Swift Package (SPM) for seamless integration.
+
 ---
 
 ## Architectural Evolution
