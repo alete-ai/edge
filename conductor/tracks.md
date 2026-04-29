@@ -4,6 +4,7 @@
 
 | ID | Track Name | Status | Link |
 |----|------------|--------|------|
+| 004_npm_package_split | npm Package Split (Core vs. Full) | [ ] Planned | [Plan](./tracks/004_npm_package_split/plan.md) |
 
 ## Archive
 

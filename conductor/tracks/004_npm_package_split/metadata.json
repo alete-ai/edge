@@ -1,0 +1,13 @@
+{
+  "id": "004_npm_package_split",
+  "name": "npm Package Split (Core vs. Full)",
+  "status": "planned",
+  "description": "Splits the library into @alete-ai/edge-core (extraction) and @alete-ai/edge (classifier) for platform-native adaptations.",
+  "metadata": {
+    "vision": "Julian",
+    "metabolism": "Maya",
+    "substrate": "Serra",
+    "phenotype": "Aris",
+    "mythos": "Lyra"
+  }
+}
