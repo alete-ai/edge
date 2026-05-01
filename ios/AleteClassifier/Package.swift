@@ -2,28 +2,29 @@
 import PackageDescription
 
 let package = Package(
-    name: "AleteClassifier",
+    name: "AleteClassifierKit",
     platforms: [
         .iOS(.v14),
         .macOS(.v11)
     ],
     products: [
         .library(
-            name: "AleteClassifier",
-            targets: ["AleteClassifier"]),
+            name: "AleteClassifierKit",
+            type: .dynamic,
+            targets: ["AleteClassifierKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Jounce/Surge.git", from: "2.3.2")
+        // No external dependencies for high structural resilience
     ],
     targets: [
         .target(
-            name: "AleteClassifier",
-            dependencies: ["Surge"],
+            name: "AleteClassifierKit",
+            dependencies: [],
             resources: [.process("Resources")]
         ),
         .testTarget(
-            name: "AleteClassifierTests",
-            dependencies: ["AleteClassifier"],
+            name: "AleteClassifierKitTests",
+            dependencies: ["AleteClassifierKit"],
             resources: [.process("Resources")]),
     ]
 )

@@ -10,7 +10,8 @@
 
 | ID | Track Name | Status | Link |
 |----|------------|--------|------|
-| 004_npm_package_split | npm Package Split (Core vs. Full) | [x] Completed | [Plan](./archive/004_npm_package_split_20260429/plan.md) |
+| 005_xcframework_distribution | XCFramework Binary Distribution | [x] Completed | [Plan](./archive/005_xcframework_distribution_20260430/plan.md) |
+| 004_npm_package_split_20260429 | NPM Package Split (Core/Edge) | [x] Completed | [Plan](./archive/004_npm_package_split_20260429/plan.md) |
 | 003-browser-native-substrate | Browser-Native Substrate Refactor | [x] Completed | [Plan](./archive/003_browser_native_substrate_20260423/plan.md) |
 | neural_substrate_optimization_20260423 | Neural Substrate Optimization | [x] Completed | [Plan](./archive/neural_substrate_optimization_20260423/plan.md) |
 | classifier_optimization_v3_95_percent_20260422 | Classifier Precision Optimization (>95%) | [x] Completed | [Plan](./archive/classifier_optimization_v3_95_percent_20260422/plan.md) |

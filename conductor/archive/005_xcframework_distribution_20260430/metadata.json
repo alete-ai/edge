@@ -1,0 +1,6 @@
+{
+  "id": "005_xcframework_distribution",
+  "name": "XCFramework Binary Distribution",
+  "status": "Completed",
+  "description": "Establish a binary distribution pipeline for the AleteClassifier Swift library using XCFramework and Swift Package Manager binary targets, including 2025 security and privacy compliance."
+}

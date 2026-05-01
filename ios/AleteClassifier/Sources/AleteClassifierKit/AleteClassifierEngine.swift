@@ -1,6 +1,5 @@
 import Foundation
 import Accelerate
-import Surge
 
 public class AleteClassifierEngine {
     private let loader: ModelLoader
@@ -208,10 +207,23 @@ public class AleteClassifierEngine {
     }
     
     private func softmax(_ logits: [Float]) -> [Float] {
-        let maxLogit = Surge.max(logits)
-        let exps = Surge.exp(logits - maxLogit)
-        let sumExps = Surge.sum(exps)
-        return exps / sumExps
+        let maxLogit = vDSP.maximum(logits)
+        var exps = [Float](repeating: 0, count: logits.count)
+        
+        // exps = exp(logits - maxLogit)
+        var negativeMaxLogit = -maxLogit
+        var shiftedLogits = [Float](repeating: 0, count: logits.count)
+        vDSP_vsadd(logits, 1, &negativeMaxLogit, &shiftedLogits, 1, vDSP_Length(logits.count))
+        
+        var count = Int32(logits.count)
+        vvexpf(&exps, shiftedLogits, &count)
+        
+        let sumExps = vDSP.sum(exps)
+        var invSum = 1.0 / sumExps
+        var result = [Float](repeating: 0, count: exps.count)
+        vDSP_vsmul(exps, 1, &invSum, &result, 1, vDSP_Length(exps.count))
+        
+        return result
     }
     
     deinit {

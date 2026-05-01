@@ -1,5 +1,5 @@
 import XCTest
-@testable import AleteClassifier
+@testable import AleteClassifierKit
 
 final class AleteClassifierTests: XCTestCase {
     
