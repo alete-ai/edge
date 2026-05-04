@@ -1,6 +1,6 @@
 # AleteEdge: HTML Extraction & Semantic Classification Library
 
-AleteEdge is a standalone TypeScript library designed for fast, on-device content extraction and semantic categorization. Unlike cloud-heavy solutions like **Firecrawl** or **Crawl4AI** that rely on expensive LLM API calls and bulky headless browsers, AleteEdge moves intelligence directly to the edge—transforming raw HTML into clean, semantic Markdown using a **built-in, 2MB AI engine** that identifies page intent without calling an API.
+AleteEdge is a standalone TypeScript and Swift library designed for fast, on-device content extraction and semantic categorization. Unlike cloud-heavy solutions like **Firecrawl** or **Crawl4AI** that rely on expensive LLM API calls and bulky headless browsers, AleteEdge moves intelligence directly to the edge—transforming raw HTML into clean, semantic Markdown using a **built-in, 2MB AI engine** that identifies page intent without calling an API.
 
 ## Features
 
