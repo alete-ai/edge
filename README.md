@@ -7,15 +7,15 @@ AleteEdge is a standalone TypeScript library designed for fast, on-device conten
 - **High-Fidelity Markdown Transforms:** Specialized extraction mode that produces clean, article-like Markdown optimized for LLM ingestion.
 - **Secure Content Buckets:** Automatic PII and Credential redaction, ensuring user data is private and "safe-by-default."
 - **Self-Contained AI:** No external APIs or heavy dependencies. The intelligence is bundled and runs instantly in any JS environment.
+- **Native Mobile Substrate:** High-performance Swift implementation for iOS and macOS with SIMD acceleration.
 - **Platform Agnostic Substrate:** Native support for Node.js, modern Browsers (zero polyfills), and WebExtensions (MV3).
 - **Elite Performance:** 96.14% accuracy with <5ms execution latency and a total package size of just 2.6MB (unpacked).
 
 ## Installation
 
-This repository is organized as a monorepo containing two packages:
+This repository is organized as a monorepo containing multiple platforms:
 
-- **[@alete-ai/edge](./packages/edge):** The full suite (Extraction + AI Classification).
-- **[@alete-ai/edge-core](./packages/edge-core):** The lightweight core (Extraction + Sanitization).
+### TypeScript (Node.js, Browsers, Extensions)
 
 ```bash
 # For the full AI-powered suite
@@ -23,6 +23,16 @@ pnpm add @alete-ai/edge
 
 # For just the lightweight extraction core
 pnpm add @alete-ai/edge-core
+```
+
+### Swift (iOS, macOS)
+
+Add AleteEdge as a dependency in your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/alete-ai/edge", .branch("main"))
+]
 ```
 
 ## Quick Start (Full Package)

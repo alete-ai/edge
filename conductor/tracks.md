@@ -4,12 +4,13 @@
 
 | ID | Track Name | Status | Link |
 |----|------------|--------|------|
-| 004_ios_native_classifier | iOS Native Classifier Implementation | [ ] Planning | [Index](./tracks/004_ios_native_classifier/index.md) |
+| (Empty) | | | |
 
 ## Archive
 
 | ID | Track Name | Status | Link |
 |----|------------|--------|------|
+| 004_ios_native_classifier | iOS Native Classifier Implementation | [x] Completed | [Index](./tracks/004_ios_native_classifier/index.md) |
 | 005_xcframework_distribution | XCFramework Binary Distribution | [x] Completed | [Plan](./archive/005_xcframework_distribution_20260430/plan.md) |
 | 004_npm_package_split_20260429 | NPM Package Split (Core/Edge) | [x] Completed | [Plan](./archive/004_npm_package_split_20260429/plan.md) |
 | 003-browser-native-substrate | Browser-Native Substrate Refactor | [x] Completed | [Plan](./archive/003_browser_native_substrate_20260423/plan.md) |
