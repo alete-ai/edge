@@ -10,8 +10,6 @@ A high-performance, native Swift implementation of the Alete Content Classifier.
 - **Cross-Platform Parity**: Rigorously tested for parity with the Alete TypeScript/Node.js implementation.
 - **Structural Awareness**: Supports classification weighting using structural metadata (link counts, image counts, etc.) to improve accuracy on web-scraped content.
 
-## Installation
-
 ### Swift Package Manager (SPM)
 
 Add the following to your `Package.swift`:
@@ -25,7 +23,7 @@ dependencies: [
 Or add it via Xcode:
 1. File > Add Packages...
 2. Enter `https://github.com/alete-ai/edge`
-3. Select the `AleteClassifier` library.
+3. Select the `AleteClassifierKit` library.
 
 ## Quick Start
 
@@ -37,10 +35,13 @@ The classifier requires four model assets (usually provided in your app bundle):
 - `tokenizer.json`: BERT-compatible tokenizer configuration.
 
 ```swift
-import AleteClassifier
+import AleteClassifierKit
 
 // 1. Initialize the Loader
 let loader = try ModelLoader(
+...
+```
+
     configURL: Bundle.main.url(forResource: "m2v_head", withExtension: "json")!,
     embeddingsURL: Bundle.main.url(forResource: "m2v_embeddings", withExtension: "bin")!,
     metaURL: Bundle.main.url(forResource: "m2v_quant_meta", withExtension: "json")!

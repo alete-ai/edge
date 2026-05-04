@@ -7,8 +7,8 @@ AleteEdge is a standalone TypeScript library designed for fast, on-device conten
 - **High-Fidelity Markdown Transforms:** Specialized extraction mode that produces clean, article-like Markdown optimized for LLM ingestion.
 - **Secure Content Buckets:** Automatic PII and Credential redaction, ensuring user data is private and "safe-by-default."
 - **Self-Contained AI:** No external APIs or heavy dependencies. The intelligence is bundled and runs instantly in any JS environment.
-- **Native Mobile Substrate:** High-performance Swift implementation for iOS and macOS with SIMD acceleration.
-- **Platform Agnostic Substrate:** Native support for Node.js, modern Browsers (zero polyfills), and WebExtensions (MV3).
+- **Native Mobile Core:** High-performance Swift implementation for iOS and macOS with SIMD acceleration.
+- **Platform Agnostic Engine:** Native support for Node.js, modern Browsers (zero polyfills), and WebExtensions (MV3).
 - **Elite Performance:** 96.14% accuracy with <5ms execution latency and a total package size of just 2.6MB (unpacked).
 
 ## Installation
@@ -77,7 +77,7 @@ The library includes a dedicated browser build that leverages native APIs (like 
 
 ## AI Autoload & Environment Support
 
-The library handles all asset resolution internally using a specialized substrate bridge:
+The library handles all asset resolution internally using a specialized platform bridge:
 
 - **Node.js:** Automatically resolves and reads model assets from the filesystem using `fs`.
 - **Browsers:** Fetches optimized assets on-demand from your server or CDN.
@@ -104,7 +104,7 @@ Utilizes a **DOM Bridge** that automatically switches between `linkedom` in Node
 ### 2. Semantic Categorization (`Model2VecEngine`)
 Powered by a distilled **Int4-quantized** architecture with zero native dependencies.
 - **Pure-JS Inference:** Forward pass logic implemented in vanilla TypeScript.
-- **Hybrid Fallback:** Seamlessly degrades to a statistical engine if signals are insufficient.
+- **Hybrid Fallback:** Seamlessly degrades to a statistical engine if input data is insufficient.
 
 ## License
 

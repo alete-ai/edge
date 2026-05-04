@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Alete",
+    name: "AleteEdge",
     platforms: [
         .iOS(.v14),
         .macOS(.v11)

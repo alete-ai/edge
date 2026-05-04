@@ -1,18 +1,26 @@
 # @alete-ai/edge
 
 The full-featured Content Extraction & Semantic Classification library. It bundles high-fidelity extraction with a built-in AI engine for genre categorization.
-
 ## Features
 
 - **Built-in AI Classification:** Automatically identifies page genre (e.g., News, Finance, Social) using a local 2MB Model2Vec engine.
 - **Unified Pipeline:** Orchestrates extraction, classification, and redaction in a single call.
 - **Safe-by-Default:** Inherits all sanitization features from `@alete-ai/edge-core`.
 - **Zero API Dependency:** Runs entirely on-device for maximum privacy and speed.
+- **Cross-Platform Parity:** Rigorously matched with the native Swift implementation for iOS/macOS.
 
 ## Footprint
+...
+```
 
-| Metric | Value |
-|--------|-------|
+## Cross-Platform Support
+
+This package is part of the AleteEdge ecosystem. If you are building native Apple applications, we recommend using the native Swift implementation:
+
+- **Swift (iOS/macOS):** [AleteClassifierKit](../../ios/AleteClassifier/README.md) - Optimized with SIMD (Accelerate) for peak mobile performance.
+
+## Relationship to Edge-Core
+
 | **Tarball Size** | ~5.7 MB |
 | **Unpacked Size** | ~13.7 MB |
 | **AI Model Mass** | ~1.8 MB (Int4) |

@@ -4,9 +4,10 @@ The lightweight, platform-agnostic core of Alete Edge. It focuses on high-fideli
 
 ## Why Use Core?
 
-- **Zero AI Overhead:** Ideal if you only need content extraction or if you are providing a "Structural Signal" to a native classifier (e.g., Swift on iOS/Mac).
+- **Zero AI Overhead:** Ideal if you only need content extraction or if you are providing structural data to a native classifier (e.g., Swift on iOS/Mac).
 - **Lightweight:** Minimal bundle size and memory footprint.
 - **Cross-Platform:** Runs seamlessly in Node.js, Browsers, and WebExtensions.
+- **Native Integration:** Designed to feed the [Alete Native Swift Classifier](../../ios/AleteClassifier/README.md) with standardized structural metadata.
 
 ## Footprint
 
@@ -36,7 +37,7 @@ const html = '<html><body><h1>Hello</h1><p>World</p></body></html>';
 const markdown = await extractor.extract(html, ExtractMode.SEMANTIC);
 ```
 
-### 2. Structural Signal Generation
+### 2. Structural Data Generation
 Extract structural markers (buttons, links, counts) to feed into a classifier.
 
 ```typescript
