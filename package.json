@@ -1,11 +1,13 @@
 {
   "name": "alete-edge-workspace",
   "version": "0.3.0",
-  "private": true,
   "description": "Workspace for Alete Edge packages",
   "scripts": {
     "test": "pnpm -r test",
     "build": "pnpm -r build",
+    "publish:ts": "pnpm publish -r --tag beta --no-git-checks",
+    "publish:swift": "git tag -a v$npm_package_version -m \"Release v$npm_package_version\" && git push origin v$npm_package_version",
+    "publish:all": "pnpm run publish:ts && pnpm run publish:swift",
     "train:data:synthetic": "python3 training/generate_synthetic.py",
     "train:data:web": "pnpm tsx training/ingest_web.ts",
     "train:model": "pnpm tsx training/train_model.js",
