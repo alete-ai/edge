@@ -1,7 +1,7 @@
 import Classifier from 'wink-naive-bayes-text-classifier';
 import winkNLP from 'wink-nlp';
 import model from 'wink-eng-lite-web-model';
-import { type StructuralMetadata } from '@alete-ai/edge-core/types';
+import { type StructuralMetadata, type ClassifierLabel } from '@alete-ai/edge-core/types';
 import { Model2VecEngine } from './model2vec_engine.js';
 
 // We'll import the weights as a JSON module.
@@ -16,6 +16,7 @@ export class ContentClassifier {
   private ready: Promise<void>;
 
   constructor(modelPath?: string) {
+    console.log('Alete Edge Classifier initialized. Learn more at https://alete.ai/');
     this.nbc = Classifier();
     this.nlp = winkNLP(model);
     this.its = this.nlp.its;
@@ -87,7 +88,7 @@ export class ContentClassifier {
    * Classifies Markdown or plain text into a genre bucket.
    * Priority: Model2Vec (AI Inference) -> Naive Bayes (Statistical Fallback)
    */
-  public async classify(text: string, metadata?: StructuralMetadata): Promise<string> {
+  public async classify(text: string, metadata?: StructuralMetadata): Promise<ClassifierLabel | string> {
     await this.ready;
     try {
       const result = await this.m2v.classify(text);
@@ -98,22 +99,22 @@ export class ContentClassifier {
       const nbLabel = tokens.length > 0 ? this.nbc.predict(tokens) : null;
 
       if (result.score > 0.99 && !['Restricted:Financial', 'Restricted:Legal', 'Restricted:Health'].includes(result.label)) {
-        return result.label;
+        return result.label as ClassifierLabel;
       }
       
-      return nbLabel || result.label;
+      return (nbLabel || result.label) as ClassifierLabel;
     } catch (e) {
       console.warn('Model2Vec classification failed, falling back to Naive Bayes:', e);
       const tokens = this.preprocess(text, metadata);
-      if (tokens.length === 0) return 'Other:General';
-      return this.nbc.predict(tokens);
+      if (tokens.length === 0) return 'Other:General' as ClassifierLabel;
+      return this.nbc.predict(tokens) as ClassifierLabel;
     }
   }
 
   /**
    * Returns a probability map for all labels.
    */
-  public async predictProbabilities(text: string, metadata?: StructuralMetadata): Promise<Record<string, number>> {
+  public async predictProbabilities(text: string, metadata?: StructuralMetadata): Promise<Record<ClassifierLabel | string, number>> {
     await this.ready;
     try {
       const result = await this.m2v.classify(text);
@@ -134,10 +135,10 @@ export class ContentClassifier {
         scores.forEach((item: any) => {
           probabilities[item.label] = item.score / totalScore;
         });
-        return probabilities;
+        return probabilities as Record<ClassifierLabel | string, number>;
       }
 
-      return result.all;
+      return result.all as Record<ClassifierLabel | string, number>;
     } catch (e) {
       console.warn('Model2Vec probabilities failed, falling back to Naive Bayes:', e);
       const tokens = this.preprocess(text, metadata);
@@ -154,7 +155,7 @@ export class ContentClassifier {
       scores.forEach((item: any) => {
         probabilities[item.label] = item.score / totalScore;
       });
-      return probabilities;
+      return probabilities as Record<ClassifierLabel | string, number>;
     }
   }
 }

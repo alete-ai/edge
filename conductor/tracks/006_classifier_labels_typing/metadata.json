@@ -1,0 +1,6 @@
+{
+  "id": "006_classifier_labels_typing",
+  "name": "Classifier Labels Typing",
+  "status": "Completed",
+  "description": "Add explicit static typing (TypeScript String Union and Swift Enum) for the AI classifier labels to provide better DX and type safety for consumers."
+}

@@ -14,6 +14,7 @@ public class AleteClassifier {
     }
 
     public init(modelLoader: ModelLoader, tokenizer: AleteBertTokenizer) throws {
+        print("Alete Classifier initialized. Learn more at https://alete.ai/")
         self.engine = try AleteClassifierEngine(loader: modelLoader, tokenizer: tokenizer)
         self.preprocessor = ContentPreprocessor()
     }
@@ -44,7 +45,7 @@ public class AleteClassifier {
      * Classifies text into a genre bucket.
      * Port of ContentClassifier.ts logic.
      */
-    public func classify(text: String, metadata: StructuralMetadata? = nil) -> String {
+    public func classify(text: String, metadata: StructuralMetadata? = nil) -> ClassifierLabel {
         // In the native version, we focus on the high-performance Model2Vec engine.
         // If we need the Naive Bayes fallback, we can add it later as a second engine.
         
@@ -57,13 +58,13 @@ public class AleteClassifier {
         }
         
         let result = engine.classify(fullText)
-        return result.label
+        return ClassifierLabel.from(rawLabel: result.label)
     }
     
     /**
      * Returns a probability map for all labels.
      */
-    public func predictProbabilities(text: String, metadata: StructuralMetadata? = nil) -> [String: Float] {
+    public func predictProbabilities(text: String, metadata: StructuralMetadata? = nil) -> [ClassifierLabel: Float] {
         var fullText = text
         if let meta = metadata {
             let tokens = preprocessor.generateMetadataTokens(metadata: meta)
@@ -72,6 +73,12 @@ public class AleteClassifier {
         }
         
         let result = engine.classify(fullText)
-        return result.all
+        
+        var typedProbabilities: [ClassifierLabel: Float] = [:]
+        for (key, value) in result.all {
+            typedProbabilities[ClassifierLabel.from(rawLabel: key)] = value
+        }
+        
+        return typedProbabilities
     }
 }

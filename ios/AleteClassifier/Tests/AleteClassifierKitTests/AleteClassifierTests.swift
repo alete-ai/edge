@@ -61,10 +61,10 @@ final class AleteClassifierTests: XCTestCase {
             
             // Check label parity
             let nativeLabel = classifier.classify(text: sample.input)
-            XCTAssertEqual(nativeLabel, sample.label, "Label mismatch for input: \(sample.input)")
+            XCTAssertEqual(nativeLabel.rawValue, sample.label, "Label mismatch for input: \(sample.input)")
             
             // Check score parity (with small epsilon for float variations)
-            if let nativeScore = result[sample.label] {
+            if let nativeScore = result[ClassifierLabel.from(rawLabel: sample.label)] {
                 XCTAssertTrue(abs(nativeScore - sample.score) < 0.05, "Score drift too high for \(sample.label): \(nativeScore) vs \(sample.score)")
             } else {
                 XCTFail("Native result missing expected label: \(sample.label)")

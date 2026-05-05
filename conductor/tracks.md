@@ -10,6 +10,7 @@
 
 | ID | Track Name | Status | Link |
 |----|------------|--------|------|
+| 006_classifier_labels_typing | Classifier Labels Typing | [x] Completed | [Index](./tracks/006_classifier_labels_typing/index.md) |
 | 004_ios_native_classifier | iOS Native Classifier Implementation | [x] Completed | [Index](./tracks/004_ios_native_classifier/index.md) |
 | 005_xcframework_distribution | XCFramework Binary Distribution | [x] Completed | [Plan](./archive/005_xcframework_distribution_20260430/plan.md) |
 | 004_npm_package_split_20260429 | NPM Package Split (Core/Edge) | [x] Completed | [Plan](./archive/004_npm_package_split_20260429/plan.md) |
