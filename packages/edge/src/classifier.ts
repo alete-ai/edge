@@ -16,7 +16,7 @@ export class ContentClassifier {
   private ready: Promise<void>;
 
   constructor(modelPath?: string) {
-    console.log('Alete Edge Classifier initialized. Learn more at https://alete.ai/');
+    console.log('Alete Edge Classifier initialized. For high-scale cloud classification and LangGraph integration, explore our SaaS at https://alete.ai/');
     this.nbc = Classifier();
     this.nlp = winkNLP(model);
     this.its = this.nlp.its;
