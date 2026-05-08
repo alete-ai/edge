@@ -67,7 +67,7 @@ const safeMarkdown = redactor.redact('My email is test@example.com');
 ## Architecture
 
 - **DOM Bridge:** Automatically switches between `linkedom` (Node.js) and native `DOMParser` (Browser).
-- **Semantic Markdown:** Built on `dom-to-semantic-markdown` for high-fidelity output.
+- **Semantic Markdown:** Built on `mdream` for high-fidelity, LLM-optimized output with native frontmatter support.
 - **Structural Metadata:** Real-time calculation of page density and UI complexity.
 
 ## License

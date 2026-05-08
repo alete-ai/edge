@@ -1,21 +1,18 @@
 import { Readability } from '@mozilla/readability'
-import {
-  convertHtmlToMarkdown as convert,
-  type SemanticMarkdownAST,
-} from 'dom-to-semantic-markdown'
+import { htmlToMarkdown } from 'mdream'
 import { getDOMProvider, type DOMProvider } from './platform/dom.js'
 import { ExtractMode, type ExtractorOptions, type StructuralMetadata } from './types.js'
 
 export class Extractor {
-  private defaultIgnoredTags: Set<string>
+  private defaultIgnoredTags: string[]
   private domProvider: DOMProvider | null = null
   private ready: Promise<void>
 
   constructor(options: ExtractorOptions = {}) {
     // These are always junk
-    this.defaultIgnoredTags = new Set(options.ignoredTags || [
+    this.defaultIgnoredTags = options.ignoredTags || [
       'script', 'style', 'iframe', 'noscript', 'svg'
-    ])
+    ]
     this.ready = this.init()
   }
 
@@ -46,70 +43,53 @@ export class Extractor {
   public async extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): Promise<string | undefined> {
     await this.ready
     try {
-      const { document } = this.domProvider!.parseHTML(html)
-
-      // Determine which tags to strip based on mode
-      const ignoredTags = new Set(this.defaultIgnoredTags)
-      if (mode === ExtractMode.SEMANTIC) {
-        // Standard high-fidelity stripping
-        ;['nav', 'footer', 'header', 'form', 'button', 'img'].forEach((t) => ignoredTags.add(t))
+      // Configuration for mdream
+      const options: any = {
+        frontmatter: true,
       }
 
-      let htmlToConvert = html
-      
-      // Pass 1 (Categorization Structural): We skip Readability because it's too 
-      // aggressive for non-article pages (Dashboards, Logins).
-      // Pass 2 (Semantic Delivery): We use Readability for junk removal if mode is SEMANTIC.
       if (mode === ExtractMode.SEMANTIC) {
-        try {
-          const reader = new Readability(document)
-          const article = reader.parse()
-          if (article && article.content) {
-            htmlToConvert = article.content
-          }
-        } catch (e) {
-          // Fallback to original HTML
+        // SEMANTIC Mode: Optimize for LLM tokens and clean reading
+        options.minimal = true // Enables isolateMain, tailwind stripping, boilerplate removal, and clean URLs
+        
+        // We still want to ensure our specific ignored tags are handled
+        options.filter = {
+          exclude: [...this.defaultIgnoredTags, 'nav', 'footer', 'header', 'form', 'button', 'img']
         }
+        
+        // Custom preference: In semantic mode, we want clean text for links (no markdown URL syntax)
+        // minimal: true usually produces [text](url), so we override 'a' if we want plain text.
+        options.tagOverrides = {
+          a: { enter: '', exit: '' }
+        }
+        
+        // Final conversion
+        let markdown = htmlToMarkdown(html, options)
+        
+        // Fallback for short snippets where isolateMain (part of minimal) might be too aggressive
+        if (!markdown || markdown.trim() === '' || markdown.length < 10) {
+          options.minimal = false
+          options.isolateMain = false
+          markdown = htmlToMarkdown(html, options)
+        }
+        
+        return markdown
+      } else {
+        // STRUCTURAL Mode: Preserve UI markers for classification
+        options.minimal = false // Stay away from token reduction here to keep markers
+        options.isolateMain = false
+        options.filter = {
+          exclude: this.defaultIgnoredTags
+        }
+        // UI Markers for the classifier
+        options.tagOverrides = {
+          button: { enter: '[', exit: '] ' },
+          a: { enter: '[', exit: '] ' },
+          label: { enter: '[', exit: '] ' }
+        }
+        
+        return htmlToMarkdown(html, options)
       }
-
-      let finalHtml = htmlToConvert
-      if (!finalHtml.toLowerCase().includes('<html')) {
-        finalHtml = `<html><body>${finalHtml}</body></html>`
-      }
-      
-      const customParser = this.domProvider!.createParser()
-
-      const markdown = convert(finalHtml, {
-        extractMainContent: false, // Managed by Readability or our mode logic
-        overrideDOMParser: customParser,
-        overrideElementProcessing: (element: Element): SemanticMarkdownAST[] | undefined => {
-          const tagName = element.tagName ? element.tagName.toLowerCase() : ''
-          const role = element.getAttribute ? element.getAttribute('role') : null
-
-          // Handle ignored tags and ARIA roles
-          if (
-            ignoredTags.has(tagName) ||
-            (mode === ExtractMode.SEMANTIC &&
-              (role === 'navigation' || role === 'banner' || role === 'contentinfo'))
-          ) {
-            return []
-          }
-
-          // Structural Mode Special: Preserve UI text markers
-          if (mode === ExtractMode.STRUCTURAL) {
-            if (tagName === 'button' || tagName === 'a' || tagName === 'label') {
-              return [{ type: 'text', content: `[${element.textContent?.trim() || ''}] ` }]
-            }
-          } else if (tagName === 'a') {
-            // Semantic Mode: Links become plain text to reduce LLM noise
-            return [{ type: 'text', content: element.textContent || '' }]
-          }
-
-          return undefined
-        },
-      })
-
-      return markdown
     } catch (error) {
       console.error('[AleteEdge] Failed to convert HTML to Markdown:', error)
       return undefined

@@ -1,0 +1,6 @@
+{
+  "id": "007_mdream_migration",
+  "name": "mdream Migration & Title Extraction",
+  "status": "Completed",
+  "description": "Migrate HTML-to-Markdown conversion to mdream to solve missing article titles and optimize structural/semantic extraction modes."
+}

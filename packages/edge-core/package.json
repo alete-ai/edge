@@ -1,6 +1,6 @@
 {
   "name": "@alete-ai/edge-core",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Core Extraction and Sanitization for Alete Edge",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -42,7 +42,7 @@
     "@hackylabs/deep-redact": "^3.0.5",
     "@mozilla/readability": "^0.6.0",
     "@yarflam/potion-base-8m": "^1.0.4",
-    "dom-to-semantic-markdown": "^1.5.0",
-    "linkedom": "^0.18.12"
+    "linkedom": "^0.18.12",
+    "mdream": "^1.1.0"
   }
 }

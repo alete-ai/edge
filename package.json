@@ -1,6 +1,6 @@
 {
   "name": "alete-edge-workspace",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Workspace for Alete Edge packages",
   "scripts": {
     "test": "pnpm -r test",
