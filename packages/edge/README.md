@@ -1,9 +1,23 @@
 # @alete-ai/edge
 
 The full-featured Content Extraction & Semantic Classification library. It bundles high-fidelity extraction with a built-in AI engine for genre categorization.
+
+## Why Alete Edge?
+
+Alete Edge is designed to solve the "Context Inflation" problem in LLM-powered applications. By classifying and filtering content **before** it leaves the user's device, you can:
+
+- **Save 90%+ on Token Costs:** Identify low-value pages (e.g., General, Promotion) and prevent them from being sent to expensive cloud models like GPT-4 or Claude 3.5.
+- **Privacy First:** Classify sensitive content (PII, Financial, Health) locally to ensure it is redacted or handled according to policy before transmission.
+- **Instant Decisioning:** Make routing decisions in < 50ms without waiting for a round-trip to an inference API.
+
 ## Features
 
-- **Built-in AI Classification:** Automatically identifies page genre (e.g., News, Finance, Social) using a local 2MB Model2Vec engine.
+- **Built-in AI Classification:** Automatically identifies page genre using a local 2MB Model2Vec engine.
+- **Classification Categories:** Supports 13 specialized labels including:
+  - `Informational:News`, `Informational:Blog`, `Informational:Research`
+  - `Commercial:Promotion`, `Social:Forum`, `Educational:Instruction`
+  - `Restricted:Financial`, `Restricted:Health`, `Restricted:Legal`, `Restricted:PII`
+  - `Functional:App`, `Creative:Prose`, `Other:General`
 - **Unified Pipeline:** Orchestrates extraction, classification, and redaction in a single call.
 - **Safe-by-Default:** Inherits all sanitization features from `@alete-ai/edge-core`.
 - **Zero API Dependency:** Runs entirely on-device for maximum privacy and speed.
