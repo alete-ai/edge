@@ -1,101 +1,92 @@
-import { DeepRedact } from '@hackylabs/deep-redact';
+import { OpenRedaction, type OpenRedactionOptions, getPatternsByCategory } from 'openredaction';
 import { type RedactorOptions } from '../types.js';
 
+/**
+ * Sovereign wrapper for the PII Shield engine.
+ * Adopts a "Narrative-First" strategy: Preserves names, dates, and locations
+ * to maintain story coherence while redacting "Toxic Identifiers" (SSNs, Credit Cards, Secrets).
+ */
 export class Redactor {
-  private redactor: DeepRedact;
+  private engine: OpenRedaction;
 
   constructor(options: RedactorOptions = {}) {
-    const {
-      redactPii = true,
-      redactFinancials = true,
-      redactCredentials = true,
-      redactInfrastructure = true,
-      customPlaceholders = {},
-    } = options;
-
-    const stringTests = [];
-
-    if (redactPii) {
-      stringTests.push(
-        {
-          pattern: /\b[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}\b/g,
-          replacer: (v: string, p: RegExp) => v.replace(p, customPlaceholders.EMAIL || '[EMAIL_REDACTED]'),
-        },
-        {
-          pattern: /\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g,
-          replacer: (v: string, p: RegExp) => v.replace(p, customPlaceholders.PHONE || '[PHONE_REDACTED]'),
-        },
-        {
-          pattern: /\b\d{3}-\d{2}-\d{4}\b/g,
-          replacer: (v: string, p: RegExp) => v.replace(p, customPlaceholders.SSN || '[SSN_REDACTED]'),
-        }
-      );
+    const patterns: string[] = [];
+    
+    // Explicitly add Toxic patterns instead of broad categories to avoid Narrative overrides
+    
+    // 1. Personal & Contact (excluding Names, Addresses, Dates)
+    if (options.redactPii !== false) {
+      patterns.push('EMAIL');
+      patterns.push('PHONE_US', 'PHONE_UK', 'PHONE_INTERNATIONAL');
+      // SSN and other gov IDs are toxic
+      patterns.push(...getPatternsByCategory('government').map(p => p.type));
     }
 
-    if (redactFinancials) {
-      stringTests.push(
-        {
-          // Refined CC pattern: 13-19 digits with optional single spaces/dashes
-          pattern: /\b(?:\d[ -]?){12,18}\d\b/g,
-          replacer: (v: string, p: RegExp) => v.replace(p, customPlaceholders.CREDIT_CARD || '[CREDIT_CARD_REDACTED]'),
-        },
-        {
-          pattern: /\b[A-Z]{2}\d{2}[A-Z0-9]{4,30}\b/g,
-          replacer: (v: string, p: RegExp) => v.replace(p, customPlaceholders.IBAN || '[IBAN_REDACTED]'),
-        }
-      );
+    // 2. Financial
+    if (options.redactFinancials !== false) {
+      patterns.push(...getPatternsByCategory('financial').map(p => p.type));
     }
 
-    if (redactCredentials) {
-      stringTests.push(
-        {
-          pattern: /\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/g,
-          replacer: (v: string, p: RegExp) => v.replace(p, customPlaceholders.AWS_KEY || '[AWS_KEY_REDACTED]'),
-        },
-        {
-          pattern: /\beyJ[a-zA-Z0-9-_]+\.[a-zA-Z0-9-_]+\.[a-zA-Z0-9-_]+\b/g,
-          replacer: (v: string, p: RegExp) => v.replace(p, customPlaceholders.JWT || '[JWT_REDACTED]'),
-        },
-        {
-          // Generic API key/secret pattern: key=value or key is value
-          pattern: /(?:key|token|secret|password|auth|api)[-._\s]*(?:[:=]|\bis\b)\s*["']?([\w-]{16,})["']?/gi,
-          replacer: (v: string, p: RegExp) => {
-            return v.replace(p, (match) => {
-              const separatorMatch = match.match(/([-._\s]*(?:[:=]|\bis\b)\s*)/i);
-              if (separatorMatch) {
-                const fullSeparator = separatorMatch[0];
-                const keyPart = match.substring(0, match.indexOf(fullSeparator));
-                return `${keyPart}${fullSeparator}${customPlaceholders.SECRET || '[SECRET_REDACTED]'}`;
-              }
-              return customPlaceholders.SECRET || '[SECRET_REDACTED]';
-            });
-          },
-        }
-      );
+    // 3. Credentials
+    if (options.redactCredentials !== false) {
+      patterns.push(...getPatternsByCategory('credentials').map(p => p.type));
     }
 
-    if (redactInfrastructure) {
-      stringTests.push(
-        {
-          pattern: /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/g,
-          replacer: (v: string, p: RegExp) => v.replace(p, customPlaceholders.IP || '[IP_REDACTED]'),
-        },
-        {
-          pattern: /\b(?:[A-Fa-f0-9]{2}[:-]){5}(?:[A-Fa-f0-9]{2})\b/g,
-          replacer: (v: string, p: RegExp) => v.replace(p, customPlaceholders.MAC || '[MAC_REDACTED]'),
-        }
-      );
+    // 4. Medical
+    if (options.redactMedical !== false) {
+      patterns.push(...getPatternsByCategory('healthcare').map(p => p.type));
     }
 
-    this.redactor = new DeepRedact({
-      stringTests,
-    });
+    // 5. Infrastructure
+    if (options.redactInfrastructure !== false) {
+      patterns.push(...getPatternsByCategory('network').map(p => p.type));
+    }
+
+    const engineOptions: OpenRedactionOptions = {
+      patterns,
+      // Narrative-First safety: Double-down on disabling entities
+      includeNames: false,
+      includeAddresses: false,
+      
+      redactionMode: 'placeholder',
+      enableContextAnalysis: true,
+      enableFalsePositiveFilter: true,
+      falsePositiveThreshold: 0.7, // Slightly lower to catch more but still high enough to avoid common words
+      deterministic: true,
+    };
+
+    this.engine = new OpenRedaction(engineOptions);
   }
 
   /**
    * Redacts sensitive information from the given text.
+   * Returns redacted text.
    */
-  public redact(text: string): string {
-    return this.redactor.redact(text) as string;
+  public async redact(text: string): Promise<string> {
+    if (!text) return text;
+    const result = await this.engine.detect(text);
+    return result.redacted;
+  }
+
+  /**
+   * Checks if the text contains any sensitive information without modifying it.
+   */
+  public async hasSensitiveInfo(text: string): Promise<boolean> {
+    if (!text) return false;
+    const result = await this.engine.detect(text);
+    return result.detections.length > 0;
+  }
+
+  /**
+   * Performs both detection and redaction in a single pass.
+   * Useful for the AleteEdge pipeline to avoid double processing.
+   */
+  public async process(text: string): Promise<{ redacted: string, hasSensitiveInfo: boolean }> {
+    if (!text) return { redacted: text, hasSensitiveInfo: false };
+    const result = await this.engine.detect(text);
+    return {
+      redacted: result.redacted,
+      hasSensitiveInfo: result.detections.length > 0
+    };
   }
 }

@@ -1,0 +1,8 @@
+{
+  "id": "008_pii_shield_detection",
+  "name": "PII Shield Detection (Medical & Enhanced Privacy)",
+  "description": "Enhance the edge-core library with Medical and refined PII detection to support App Store Privacy compliance.",
+  "status": "completed",
+  "created_at": "2026-05-13",
+  "priority": "high"
+}

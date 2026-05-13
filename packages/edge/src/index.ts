@@ -54,9 +54,12 @@ export class AleteEdge {
     let markdown = await this.extractor.extract(html, ExtractMode.SEMANTIC) || ''
     const te2 = perf.now()
 
+    let hasSensitiveInfo = false
     const tr_start = perf.now()
     if (this.redactor) {
-      markdown = this.redactor.redact(markdown)
+      const redactionResult = await this.redactor.process(markdown)
+      markdown = redactionResult.redacted
+      hasSensitiveInfo = redactionResult.hasSensitiveInfo
     }
     const tr_end = perf.now()
 
@@ -65,6 +68,7 @@ export class AleteEdge {
     return {
       markdown,
       label,
+      hasSensitiveInfo,
       metadata: {
         ...structuralMetadata,
         charCount: markdown.length,
@@ -85,7 +89,7 @@ export class AleteEdge {
   public async extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): Promise<string | undefined> {
     let markdown = await this.extractor.extract(html, mode)
     if (markdown && this.redactor) {
-      markdown = this.redactor.redact(markdown)
+      markdown = await this.redactor.redact(markdown)
     }
     return markdown
   }

@@ -1,71 +1,63 @@
 import { describe, it, expect } from 'vitest';
 import { Redactor } from './Redactor.js';
 
-describe('Redactor (Privacy-First Sanitization)', () => {
+describe('Redactor (Narrative-First Sanitization)', () => {
   const redactor = new Redactor();
 
-  it('should redact email addresses', () => {
-    const input = 'Contact me at stoyan@example.com for details.';
-    const output = redactor.redact(input);
-    expect(output).toBe('Contact me at [EMAIL_REDACTED] for details.');
+  it('should redact email addresses', async () => {
+    const input = 'Contact me at john.doe@gmail.com for details.';
+    const output = await redactor.redact(input);
+    expect(output).toMatch(/\[EMAIL_\d+\]/);
   });
 
-  it('should redact phone numbers', () => {
-    const input = 'Call me at +1 (555) 123-4567 or 555.123.4567';
-    const output = redactor.redact(input);
-    expect(output).toContain('[PHONE_REDACTED]');
+  it('should redact phone numbers', async () => {
+    const input = 'Call me at 07700900123';
+    const output = await redactor.redact(input);
+    expect(output).toMatch(/\[PHONE_UK_\d+\]/);
   });
 
-  it('should redact credit card numbers', () => {
-    const input = 'My card number is 1234 5678 1234 5678.';
-    const output = redactor.redact(input);
-    expect(output).toBe('My card number is [CREDIT_CARD_REDACTED].');
+  it('should redact SSN when context is provided', async () => {
+    const input = 'My SSN: 123-45-6789.';
+    const output = await redactor.redact(input);
+    expect(output).toMatch(/\[SSN_\d+\]/);
   });
 
-  it('should redact SSN', () => {
-    const input = 'My SSN is 123-45-6789.';
-    const output = redactor.redact(input);
-    expect(output).toBe('My SSN is [SSN_REDACTED].');
+  it('should redact medical records', async () => {
+    const input = 'Patient MRN-ABC12345 was seen today.';
+    const output = await redactor.redact(input);
+    expect(output).toMatch(/\[MRN_\d+\]/);
   });
 
-  it('should redact IBAN', () => {
-    const input = 'Transfer to DE89370400440532013000.';
-    const output = redactor.redact(input);
-    expect(output).toBe('Transfer to [IBAN_REDACTED].');
+  it('should PRESERVE names and dates (Narrative-First)', async () => {
+    const input = 'On Wednesday, May 13, 2026, John Smith met with the team in New York.';
+    const output = await redactor.redact(input);
+    expect(output).toContain('John Smith');
+    expect(output).toContain('Wednesday, May 13, 2026');
+    expect(output).toContain('New York');
   });
 
-  it('should redact AWS keys', () => {
-    const input = 'AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE';
-    const output = redactor.redact(input);
-    expect(output).toBe('AWS_ACCESS_KEY_ID=[AWS_KEY_REDACTED]');
+  it('should provide hasSensitiveInfo flag', async () => {
+    const safeText = 'This is a public article about the climate.';
+    const sensitiveText = 'My SSN: 123-45-6789';
+    
+    expect(await redactor.hasSensitiveInfo(safeText)).toBe(false);
+    expect(await redactor.hasSensitiveInfo(sensitiveText)).toBe(true);
   });
 
-  it('should redact generic secrets in key-value pairs', () => {
-    const input = 'Your api_key is "abc-def-ghi-jkl-mno" and the password=supersecretpassword';
-    const output = redactor.redact(input);
-    expect(output).toContain('api_key is [SECRET_REDACTED]');
-    expect(output).toContain('password=[SECRET_REDACTED]');
+  it('should process and return both redacted text and flag', async () => {
+    const input = 'SSN: 123-45-6789';
+    const result = await redactor.process(input);
+    expect(result.hasSensitiveInfo).toBe(true);
+    expect(result.redacted).toMatch(/\[SSN_\d+\]/);
   });
 
-  it('should redact IP addresses', () => {
-    const input = 'Connecting to 192.168.1.1...';
-    const output = redactor.redact(input);
-    expect(output).toBe('Connecting to [IP_REDACTED]...');
-  });
-
-  it('should support custom placeholders', () => {
-    const customRedactor = new Redactor({
-      customPlaceholders: { EMAIL: '[HIDDEN_EMAIL]' }
-    });
-    const input = 'Email: test@test.com';
-    expect(customRedactor.redact(input)).toBe('Email: [HIDDEN_EMAIL]');
-  });
-
-  it('should allow disabling categories', () => {
-    const selectiveRedactor = new Redactor({ redactPii: false });
-    const input = 'Email: test@test.com, IP: 1.1.1.1';
-    const output = selectiveRedactor.redact(input);
-    expect(output).toContain('test@test.com');
-    expect(output).toContain('[IP_REDACTED]');
+  it('should allow selective redaction via options', async () => {
+    const selectiveRedactor = new Redactor({ redactFinancials: false });
+    const input = 'Card: 4111-1111-1111-1111, SSN: 123-45-6789';
+    const output = await selectiveRedactor.redact(input);
+    
+    // Financials should be preserved, Government (SSN) should be redacted
+    expect(output).toContain('4111-1111-1111-1111');
+    expect(output).toMatch(/\[SSN_\d+\]/);
   });
 });

@@ -4,12 +4,12 @@
 
 | ID | Track Name | Status | Link |
 |----|------------|--------|------|
-| (Empty) | | | |
 
 ## Archive
 
 | ID | Track Name | Status | Link |
 |----|------------|--------|------|
+| 008_pii_shield_detection | PII Shield Detection (Medical & Enhanced Privacy) | [x] Completed | [Index](./archive/008_pii_shield_detection_20260513/index.md) |
 | 007_mdream_migration | mdream Migration & Title Extraction | [x] Completed | [Index](./archive/007_mdream_migration_20260508/index.md) |
 | 006_classifier_labels_typing | Classifier Labels Typing | [x] Completed | [Index](./tracks/006_classifier_labels_typing/index.md) |
 | 004_ios_native_classifier | iOS Native Classifier Implementation | [x] Completed | [Index](./tracks/004_ios_native_classifier/index.md) |

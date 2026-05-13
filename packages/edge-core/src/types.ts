@@ -42,6 +42,7 @@ export interface RedactorOptions {
   redactFinancials?: boolean;
   redactCredentials?: boolean;
   redactInfrastructure?: boolean;
+  redactMedical?: boolean;
   customPlaceholders?: Record<string, string>;
 }
 
@@ -61,6 +62,7 @@ export interface AleteEdgeTiming {
 export interface AleteEdgeResult {
   markdown: string
   label: ClassifierLabel | string
+  hasSensitiveInfo?: boolean;
   metadata?: StructuralMetadata & {
     charCount: number
   }

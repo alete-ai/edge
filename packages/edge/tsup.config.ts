@@ -48,6 +48,10 @@ export default defineConfig([
         'fs': path.resolve(__dirname, '../edge-core/src/platform/empty-shim.ts'),
         'path': path.resolve(__dirname, '../edge-core/src/platform/empty-shim.ts'),
         'url': path.resolve(__dirname, '../edge-core/src/platform/empty-shim.ts'),
+        'crypto': path.resolve(__dirname, '../edge-core/src/platform/empty-shim.ts'),
+        'os': path.resolve(__dirname, '../edge-core/src/platform/empty-shim.ts'),
+        'stream': path.resolve(__dirname, '../edge-core/src/platform/empty-shim.ts'),
+        'worker_threads': path.resolve(__dirname, '../edge-core/src/platform/empty-shim.ts'),
       }
     }
   }

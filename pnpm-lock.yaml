@@ -65,9 +65,6 @@ importers:
 
   packages/edge-core:
     dependencies:
-      '@hackylabs/deep-redact':
-        specifier: ^3.0.5
-        version: 3.0.5
       '@mozilla/readability':
         specifier: ^0.6.0
         version: 0.6.0
@@ -80,6 +77,9 @@ importers:
       mdream:
         specifier: ^1.1.0
         version: 1.1.0
+      openredaction:
+        specifier: ^1.1.2
+        version: 1.1.2
 
 packages:
 
@@ -311,9 +311,6 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
-
-  '@hackylabs/deep-redact@3.0.5':
-    resolution: {integrity: sha512-CI6TJytOngHiD9RCjBBwsBrg5kCkyK74RBxawLCQ8b6yOzDgIPN4/zRI/YvL6IV18Xcb6HI93Fo2bzJ19efNqQ==}
 
   '@huggingface/jinja@0.5.7':
     resolution: {integrity: sha512-OosMEbF/R6zkKNNzqhI7kvKYCpo1F0UeIv46/h4D4UjVEKKd6k3TiV8sgu6fkreX4lbBiRI+lZG8UnXnqVQmEQ==}
@@ -1393,6 +1390,24 @@ packages:
   onnxruntime-web@1.26.0-dev.20260416-b7804b056c:
     resolution: {integrity: sha512-MD6Ss4GSpQBo6zqoJzyT9LRbKYs7x/JVN23FT24EcEvlqF4VuzPOeH6X38orZPKHQDbprn7K+SBpu0/mj2CQiw==}
 
+  openredaction@1.1.2:
+    resolution: {integrity: sha512-jxHG+LcNvqCFJDrDpCsNygE26XFCfj3kafyVfNtdbQBSApDDNcoQYWMp5rIKstQQ70Eg5AjEU41jFRp6pnfIqw==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      mammoth: ^1.6.0
+      pdf-parse: ^1.1.1
+      react: ^18.0.0 || ^19.0.0
+      tesseract.js: ^5.0.0
+    peerDependenciesMeta:
+      mammoth:
+        optional: true
+      pdf-parse:
+        optional: true
+      react:
+        optional: true
+      tesseract.js:
+        optional: true
+
   parse5@7.3.0:
     resolution: {integrity: sha512-IInvU7fabl34qmi9gY8XOVxhYyMyuH2xUNpb2q8/Y+7552KlejkRvqvD19nMoUW/uQGGbqNpA6Tufu5FL5BZgw==}
 
@@ -1918,8 +1933,6 @@ snapshots:
     optional: true
 
   '@exodus/bytes@1.15.0': {}
-
-  '@hackylabs/deep-redact@3.0.5': {}
 
   '@huggingface/jinja@0.5.7': {}
 
@@ -2805,6 +2818,8 @@ snapshots:
       onnxruntime-common: 1.24.0-dev.20251116-b39e144322
       platform: 1.3.6
       protobufjs: 7.5.5
+
+  openredaction@1.1.2: {}
 
   parse5@7.3.0:
     dependencies:
