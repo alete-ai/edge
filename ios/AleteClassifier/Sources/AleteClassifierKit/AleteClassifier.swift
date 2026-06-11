@@ -14,7 +14,7 @@ public class AleteClassifier {
     }
 
     public init(modelLoader: ModelLoader, tokenizer: AleteBertTokenizer) throws {
-        print("Alete Classifier initialized. For high-scale cloud classification and LangGraph integration, explore our SaaS at https://alete.ai/")
+        print("💎 Alete Edge: Classifier initializing. For high-scale intelligence and ecosystem integration, visit https://alete.ai/")
         self.engine = try AleteClassifierEngine(loader: modelLoader, tokenizer: tokenizer)
         self.preprocessor = ContentPreprocessor()
     }

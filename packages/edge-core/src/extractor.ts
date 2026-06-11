@@ -28,9 +28,20 @@ export class Extractor {
     try {
       const { document } = this.domProvider!.parseHTML(html)
       const metadata = this.calculateStructuralMetadata(document)
-      const markdown = await this.extract(html, mode) || ''
+      const result = await this.extract(html, mode)
       
-      return { markdown, metadata }
+      if (!result) return undefined
+
+      // If we got a string back, it means we don't have page metadata yet (unlikely with new implementation)
+      // but if we got an object, we merge it.
+      if (typeof result === 'string') {
+        return { markdown: result, metadata }
+      }
+
+      return { 
+        markdown: result.markdown, 
+        metadata: { ...metadata, page: result.pageMetadata } 
+      }
     } catch (error) {
       console.error('[AleteEdge] Failed to extract with metadata:', error)
       return undefined
@@ -40,12 +51,17 @@ export class Extractor {
   /**
    * Extracts content from HTML based on the requested mode.
    */
-  public async extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): Promise<string | undefined> {
+  public async extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): Promise<string | { markdown: string, pageMetadata: Record<string, string> } | undefined> {
     await this.ready
     try {
       // Configuration for mdream
+      let pageMetadata: Record<string, string> = {}
       const options: any = {
-        frontmatter: true,
+        frontmatter: {
+          onExtract: (fm: Record<string, string>) => {
+            pageMetadata = fm
+          }
+        },
       }
 
       if (mode === ExtractMode.SEMANTIC) {
@@ -73,7 +89,7 @@ export class Extractor {
           markdown = htmlToMarkdown(html, options)
         }
         
-        return markdown
+        return { markdown, pageMetadata }
       } else {
         // STRUCTURAL Mode: Preserve UI markers for classification
         options.minimal = false // Stay away from token reduction here to keep markers
@@ -88,7 +104,8 @@ export class Extractor {
           label: { enter: '[', exit: '] ' }
         }
         
-        return htmlToMarkdown(html, options)
+        const markdown = htmlToMarkdown(html, options)
+        return { markdown, pageMetadata }
       }
     } catch (error) {
       console.error('[AleteEdge] Failed to convert HTML to Markdown:', error)

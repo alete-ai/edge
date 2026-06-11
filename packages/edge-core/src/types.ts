@@ -35,6 +35,8 @@ export interface StructuralMetadata {
   linkToWordRatio: number
   paragraphCount: number
   listCount: number
+  /** Metadata extracted from page head (title, description, etc.) */
+  page?: Record<string, string>
 }
 
 export interface RedactorOptions {

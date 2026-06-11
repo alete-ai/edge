@@ -17,7 +17,8 @@ describe('Substrate Test: Core Package', () => {
     }
     
     // Test SEMANTIC mode
-    const markdown = await extractor.extract(html, ExtractMode.SEMANTIC)
+    const semanticResult = await extractor.extract(html, ExtractMode.SEMANTIC)
+    const markdown = typeof semanticResult === 'object' ? semanticResult.markdown : semanticResult
     expect(markdown).toContain('Core Substrate')
     expect(markdown).not.toContain('[Action]')
   })

@@ -16,13 +16,13 @@ export class ContentClassifier {
   private ready: Promise<void>;
 
   constructor(modelPath?: string) {
-    console.log('Alete Edge Classifier initialized. For high-scale cloud classification and LangGraph integration, explore our SaaS at https://alete.ai/');
+    console.log('💎 Alete Edge: Classifier  initializing. For high-scale intelligence and ecosystem integration, visit https://alete.ai/');
     this.nbc = Classifier();
     this.nlp = winkNLP(model);
     this.its = this.nlp.its;
     this.m2v = new Model2VecEngine(modelPath);
 
-    // Load the pre-trained Naive Bayes model as fallback/legacy
+    // Load the pre-trained statistical weights as a probabilistic fallback substrate
     this.nbc.importJSON(JSON.stringify(weights));
     this.nbc.consolidate();
     
@@ -104,7 +104,7 @@ export class ContentClassifier {
       
       return (nbLabel || result.label) as ClassifierLabel;
     } catch (e) {
-      console.warn('Model2Vec classification failed, falling back to Naive Bayes:', e);
+      console.warn('⚠️ Alete Edge: Semantic inference failed, falling back to probabilistic substrate:', e);
       const tokens = this.preprocess(text, metadata);
       if (tokens.length === 0) return 'Other:General' as ClassifierLabel;
       return this.nbc.predict(tokens) as ClassifierLabel;
@@ -140,7 +140,7 @@ export class ContentClassifier {
 
       return result.all as Record<ClassifierLabel | string, number>;
     } catch (e) {
-      console.warn('Model2Vec probabilities failed, falling back to Naive Bayes:', e);
+      console.warn('⚠️ Alete Edge: Semantic substrate probability calculation failed, falling back to probabilistic substrate:', e);
       const tokens = this.preprocess(text, metadata);
       if (tokens.length === 0) return {};
       

@@ -22,12 +22,26 @@
     "build": "tsup",
     "postbuild": "mkdir -p dist/model && cp src/model/m2v_embeddings.bin src/model/m2v_quant_meta.json dist/model/ && du -sh dist/*.js dist/*.cjs dist/model"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "edge",
+    "classifier",
     "nlp",
     "extraction",
+    "analysis",
     "readability",
-    "markdown"
+    "markdown",
+    "swift",
+    "ios",
+    "crawler",
+    "scraper",
+    "extension",
+    "create-ml",
+    "firecrawl",
+    "crawl4ai",
+    "nlmodel"
   ],
   "author": "Stoyan Dimitrov <https://github.com/StoyanD>",
   "license": "AGPL-3.0",

@@ -53,8 +53,8 @@ describe('AleteEdge (Unified API)', () => {
     const mockedExtractor = mock(Extractor)
     const mockedClassifier = mock(ContentClassifier)
 
-    const mockHtml = '<html><body>Email: test@example.com</body></html>'
-    const mockMarkdown = 'Email: test@example.com'
+    const mockHtml = '<html><body>Email: john.doe@gmail.com</body></html>'
+    const mockMarkdown = 'Email: john.doe@gmail.com'
     const mockLabel = 'Other:General'
 
     when(mockedExtractor.extractWithMetadata(anything(), anything())).thenResolve({
@@ -80,7 +80,7 @@ describe('AleteEdge (Unified API)', () => {
 
     const result = await edge.process(mockHtml)
 
-    expect(result.markdown).toBe('Email: [EMAIL_REDACTED]')
+    expect(result.markdown).toMatch(/Email: \[EMAIL_\d+\]/)
     expect(result.label).toBe(mockLabel)
   })
 

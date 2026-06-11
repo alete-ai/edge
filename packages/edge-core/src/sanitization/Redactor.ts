@@ -53,6 +53,7 @@ export class Redactor {
       enableFalsePositiveFilter: true,
       falsePositiveThreshold: 0.7, // Slightly lower to catch more but still high enough to avoid common words
       deterministic: true,
+      enableMetrics: false,
     };
 
     this.engine = new OpenRedaction(engineOptions);

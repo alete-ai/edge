@@ -51,7 +51,9 @@ export class AleteEdge {
 
     // Pass 2: Semantic Extraction for high-fidelity output
     const ts2 = perf.now()
-    let markdown = await this.extractor.extract(html, ExtractMode.SEMANTIC) || ''
+    const semanticResult = await this.extractor.extract(html, ExtractMode.SEMANTIC)
+    let markdown = (typeof semanticResult === 'object' ? semanticResult.markdown : semanticResult) || ''
+    const pageMetadata = typeof semanticResult === 'object' ? semanticResult.pageMetadata : {}
     const te2 = perf.now()
 
     let hasSensitiveInfo = false
@@ -71,6 +73,7 @@ export class AleteEdge {
       hasSensitiveInfo,
       metadata: {
         ...structuralMetadata,
+        page: { ...structuralMetadata.page, ...pageMetadata },
         charCount: markdown.length,
       },
       timing: {
@@ -87,7 +90,9 @@ export class AleteEdge {
    * Only extract markdown without categorization. Defaults to SEMANTIC mode.
    */
   public async extract(html: string, mode: ExtractMode = ExtractMode.SEMANTIC): Promise<string | undefined> {
-    let markdown = await this.extractor.extract(html, mode)
+    const result = await this.extractor.extract(html, mode)
+    let markdown = typeof result === 'object' ? result.markdown : result
+    
     if (markdown && this.redactor) {
       markdown = await this.redactor.redact(markdown)
     }
